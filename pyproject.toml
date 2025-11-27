@@ -1,0 +1,10 @@
+[project]
+name = "catered_by_me"
+version = "0.1.0"
+description = "Cooking day-of execution planner backend"
+requires-python = ">=3.11"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
