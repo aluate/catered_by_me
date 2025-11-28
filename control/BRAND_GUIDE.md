@@ -54,17 +54,61 @@ Typography:
 - One body/UI font (Inter or system).
 - Keep weight range between 400–700, no ultra-thin.
 
-## Logo direction
+## Logo System
 
-- Wordmark: "Catered By Me" in a rounded sans, mostly lowercase.
-- Mark (favicon/icon):
-  - Circular or rounded-square.
-  - Serving cloche or plate + 3–4 horizontal "timeline" bars.
-  - Optional small clock tick mark to reinforce time.
+### Final Logo Design
 
-- Badge (for marketing/social, not tiny sizes):
-  - Outer ring text: "Catered By Me" / "Host Mode On".
-  - Center: clock + fork/spoon or cloche + tick marks.
+The Catered By Me logo is a **round analog clock** with fork and knife as clock hands, representing "time to cook / time to host."
+
+**Core Elements:**
+- **Round clock face** with 12 tick marks
+- **Fork** (2 tines only) acts as the short hand, pointing toward ~10:00
+- **Knife** acts as the long hand, pointing toward ~4:00
+- Hands form an asymmetrical "X" (not a perfect crosshair/target)
+- **Major ticks** at 12, 3, 6, 9 (rectangular marks)
+- **Minor ticks** at 1, 2, 4, 5, 7, 8, 10, 11 (small dots)
+
+**Style:**
+- Flat, minimal, friendly
+- No spark/starburst/flare
+- No crosshair or target vibes
+- Clean, readable at all sizes
+
+### Color Variants
+
+1. **Primary** (`logo-clock-primary.svg`)
+   - Uses `accent-primary` (#4F7C63 - sage/olive)
+   - Default for headers, main branding
+
+2. **Secondary** (`logo-clock-secondary.svg`)
+   - Uses `accent-secondary` (#F4A87A - warm apricot)
+   - For accents, highlights, special sections
+
+3. **Mono** (`logo-clock-mono.svg`)
+   - Uses `ink` (#1E2220 - charcoal)
+   - For light backgrounds, favicon, single-color contexts
+
+### Usage Guidelines
+
+**Do:**
+- Use primary variant in headers and main navigation
+- Use mono variant for favicon and light backgrounds
+- Keep wordmark "Catered By Me" with logo in headers
+- Maintain minimum size for readability (32px minimum for icon)
+
+**Don't:**
+- Don't reinterpret as a crosshair or target
+- Don't add extra elements (sparks, gradients, shadows)
+- Don't use more than 2 tines on the fork
+- Don't make hands perfectly symmetrical (keep the 10:00/4:00 angle)
+- Don't remove any of the 12 tick marks
+
+### Wordmark
+
+- Text: "Catered By Me" (title case)
+- Font: Bold, rounded sans-serif matching brand typography
+- Color: `ink` (#1E2220)
+- Can be hidden on mobile if space is tight (icon-only)
 
 ## Personality messages (microcopy)
 

@@ -1,0 +1,24 @@
+<svg width="32" height="32" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simplified version for favicon - thicker strokes for visibility at small sizes -->
+  <circle cx="64" cy="64" r="58" stroke="#4F7C63" stroke-width="4" fill="none"/>
+  
+  <!-- Major ticks only for favicon -->
+  <rect x="61" y="10" width="6" height="14" fill="#4F7C63"/>
+  <rect x="61" y="104" width="6" height="14" fill="#4F7C63"/>
+  <rect x="10" y="61" width="14" height="6" fill="#4F7C63"/>
+  <rect x="104" y="61" width="14" height="6" fill="#4F7C63"/>
+  
+  <!-- Fork (short hand) -->
+  <g transform="translate(64,64) rotate(-60)">
+    <line x1="0" y1="0" x2="0" y2="-32" stroke="#4F7C63" stroke-width="4" stroke-linecap="round"/>
+    <line x1="-5" y1="-32" x2="-5" y2="-22" stroke="#4F7C63" stroke-width="3" stroke-linecap="round"/>
+    <line x1="5" y1="-32" x2="5" y2="-22" stroke="#4F7C63" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Knife (long hand) -->
+  <g transform="translate(64,64) rotate(120)">
+    <line x1="0" y1="0" x2="0" y2="-48" stroke="#4F7C63" stroke-width="4" stroke-linecap="round"/>
+    <polygon points="0,-48 -4,-42 0,-36 4,-42" fill="#4F7C63"/>
+  </g>
+</svg>
+

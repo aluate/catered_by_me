@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Button from "./ui/Button";
+import Logo from "./Logo";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -19,28 +20,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo + Wordmark */}
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-accent-primary flex items-center justify-center">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 2L3 7V17H17V7L10 2Z"
-                  stroke="#F7F3EE"
-                  strokeWidth="1.5"
-                  fill="none"
-                />
-                <line x1="5" y1="10" x2="15" y2="10" stroke="#F7F3EE" strokeWidth="1" />
-                <line x1="6" y1="13" x2="14" y2="13" stroke="#F7F3EE" strokeWidth="1" />
-                <line x1="7" y1="16" x2="13" y2="16" stroke="#F7F3EE" strokeWidth="1" />
-              </svg>
-            </div>
-            <span className="text-xl font-bold text-ink">catered by me</span>
-          </div>
+          <Logo variant="primary" withWordmark={true} />
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
