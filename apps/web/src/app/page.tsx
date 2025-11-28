@@ -50,10 +50,10 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-text-main mb-4">
-                Turn chaos in the kitchen into a game plan.
+                Host the meal. We&apos;ve got the rest.
               </h1>
               <p className="text-base md:text-[15px] text-text-muted mb-6">
-                Paste your recipes, pick a serve time, and get a minute-by-minute schedule for the big day.
+                You know what looks good. We know how to get you there. Paste your recipes, pick a serve time, and get a minute-by-minute schedule for the big day.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button

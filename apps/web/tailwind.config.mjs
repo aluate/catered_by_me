@@ -9,8 +9,11 @@ export default {
       colors: {
         'body': '#f7f3ee',
         'card': '#ffffff',
-        'accent-primary': '#3b7f5c',
+        'accent-primary': '#4F7C63',
         'accent-primary-soft': '#e2f0e8',
+        'accent-secondary': '#F4A87A',
+        'ink': '#1E2220',
+        'lane-bg': '#E7E0D9',
         'text-main': '#121212',
         'text-muted': '#4b5563',
       },

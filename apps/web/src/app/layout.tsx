@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Catered By Me",
-  description: "Your day-of cooking execution planner",
+  description: "Host the meal. We've got the rest. Turn your recipes into a step-by-step game plan so everything hits the table at the same time.",
 };
 
 export default function RootLayout({
