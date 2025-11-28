@@ -82,8 +82,9 @@ const RecipeForm: React.FC<Props> = ({ onScheduleGenerated }) => {
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-    } catch (err: any) {
-      setError(err?.message || "Something went wrong generating the schedule.");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong generating the schedule.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

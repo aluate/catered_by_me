@@ -156,7 +156,7 @@ export default function HomePage() {
                 Set headcount & serve time
               </h3>
               <p className="text-sm text-text-muted">
-                Tell us how many guests you're feeding and when you want to serve.
+                Tell us how many guests you&apos;re feeding and when you want to serve.
               </p>
             </div>
 
