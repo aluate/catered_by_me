@@ -87,12 +87,14 @@
 
 ## 🚧 What's Left To Do
 
-### Phase 3: User Accounts & Recipe Bank
+### Phase 3: User Accounts & Recipe Bank (IN PROGRESS)
+- [ ] Supabase setup (auth + database)
 - [ ] Magic Link authentication (email-based login)
 - [ ] User profiles and saved recipes
 - [ ] Recipe library with tags
 - [ ] Reuse saved recipes in events
 - [ ] Event types (prep-week vs event)
+- [ ] Capacity warning system integration
 
 ### Phase 4: Enhanced Recipe Input
 - [ ] URL import from recipe blogs (schema.org support)
