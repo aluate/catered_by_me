@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { parseTextRecipe, generateSchedule, type Schedule } from "../lib/api";
+import Button from "./ui/Button";
 
 type Props = {
   onScheduleGenerated: (schedule: Schedule) => void;
@@ -178,13 +179,13 @@ const RecipeForm: React.FC<Props> = ({ onScheduleGenerated }) => {
         )}
 
         <div className="flex justify-end">
-          <button
+          <Button
             type="submit"
+            variant="primary"
             disabled={loading}
-            className="inline-flex items-center px-4 py-2 rounded-xl bg-accent-primary text-white text-sm font-medium hover:bg-[#2d6348] disabled:opacity-60 transition-colors"
           >
             {loading ? "Cooking up your plan..." : "Generate Game Plan"}
-          </button>
+          </Button>
         </div>
       </form>
     </section>
