@@ -43,10 +43,10 @@ const ScheduleView: React.FC<Props> = ({ schedule }) => {
   const sortedLanes = sortLanes(schedule.lanes);
 
   return (
-    <section id="schedule" className="mt-10">
+    <section id="schedule">
       <div className="mb-4">
-        <h2 className="text-2xl font-semibold">Game plan</h2>
-        <p className="text-sm text-gray-600">
+        <h2 className="text-xl md:text-2xl font-semibold">Your game plan</h2>
+        <p className="text-sm text-text-muted">
           Serving at <span className="font-medium">{serveLabel}</span>
         </p>
         {schedule.notes && (
@@ -67,10 +67,10 @@ const ScheduleView: React.FC<Props> = ({ schedule }) => {
           {sortedLanes.map((lane) => (
             <div
               key={lane.station}
-              className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm"
+              className="bg-card border border-gray-200 rounded-xl p-4 shadow-sm"
             >
               <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-700 mb-3">
-                {lane.station}
+                {lane.station.charAt(0).toUpperCase() + lane.station.slice(1)}
               </h3>
               <ul className="space-y-2 text-sm">
                 {lane.tasks
@@ -85,7 +85,7 @@ const ScheduleView: React.FC<Props> = ({ schedule }) => {
                       key={task.id}
                       className="border border-gray-100 rounded-lg px-3 py-2 bg-gray-50"
                     >
-                      <div className="text-xs font-mono text-gray-500 mb-0.5">
+                      <div className="text-xs font-semibold font-mono text-gray-600 mb-0.5">
                         {formatTime(task.start_time)}–{formatTime(task.end_time)}
                       </div>
                       <div className="font-medium">{task.label}</div>

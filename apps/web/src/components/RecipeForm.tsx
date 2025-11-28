@@ -90,10 +90,10 @@ const RecipeForm: React.FC<Props> = ({ onScheduleGenerated }) => {
   }
 
   return (
-    <section className="mt-6">
+    <section>
       <form
         onSubmit={handleSubmit}
-        className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4"
+        className="bg-card border border-gray-200 rounded-xl p-6 shadow-sm space-y-4"
       >
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold">Plan your cook</h2>
@@ -180,7 +180,7 @@ const RecipeForm: React.FC<Props> = ({ onScheduleGenerated }) => {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 disabled:opacity-60"
+            className="inline-flex items-center px-4 py-2 rounded-xl bg-accent-primary text-white text-sm font-medium hover:bg-[#2d6348] disabled:opacity-60 transition-colors"
           >
             {loading ? "Cooking up your plan..." : "Generate Game Plan"}
           </button>
