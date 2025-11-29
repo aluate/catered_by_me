@@ -5,7 +5,6 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.requests import Request
-from starlette.responses import Response
 from pydantic import BaseModel
 
 from .dependencies import get_settings, Settings, require_auth
@@ -58,7 +57,7 @@ async def rate_limit_middleware(request: Request, call_next):
             # For now, use a hash of the token as user identifier
             token = auth_header.split(" ")[1]
             user_id = token[:16]  # Simplified user ID
-        except:
+        except Exception:
             pass
     
     # Check rate limit
