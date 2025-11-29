@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../components/auth/AuthProvider";
 import { listEvents, listRecipes, getProfile, type SavedEvent, type SavedRecipe, type UserProfile } from "../../lib/api";
 import { getMessage } from "../../lib/messages";
+import { isDemoMode } from "../../lib/demo";
 import Button from "../../components/ui/Button";
 import Link from "next/link";
 
@@ -206,6 +207,11 @@ export default function AppDashboard() {
           <p className="text-xs text-text-muted mt-3">
             Start wherever your brain is: the party, the recipes, or the weekday grind.
           </p>
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <Link href="/redeem" className="text-sm text-accent-primary hover:underline">
+              Got gifted Catered By Me? Redeem your code →
+            </Link>
+          </div>
         </div>
 
         {/* Recent Activity */}

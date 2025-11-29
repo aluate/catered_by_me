@@ -1,11 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Button from "../../components/ui/Button";
 import Logo from "../../components/Logo";
+import { useToast } from "../../components/ui/Toast";
+import { isDemoMode } from "../../lib/demo";
+import DemoSuccess from "../../components/DemoSuccess";
 
 export default function PricingPage() {
   const { showToast } = useToast();
@@ -47,6 +50,13 @@ export default function PricingPage() {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-ink mb-4">Simple pricing</h1>
+            <div className="mb-6">
+              <Link href="/gift">
+                <Button variant="secondary" size="sm">
+                  🎁 Gift a Membership
+                </Button>
+              </Link>
+            </div>
             <p className="text-xl text-text-muted">
               Host the meal. We&apos;ve got the rest.
             </p>

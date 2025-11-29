@@ -456,3 +456,103 @@ export async function updateProfile(
     session
   );
 }
+
+// Gift code types
+export type GiftCode = {
+  id: string;
+  code: string;
+  purchaser_email?: string;
+  recipient_name?: string;
+  recipient_email?: string;
+  message?: string;
+  plan: string;
+  status: string;
+  redeemed_by?: string;
+  redeemed_at?: string;
+  expires_at: string;
+  created_at: string;
+};
+
+export type GiftCodeCreateRequest = {
+  purchaser_email?: string;
+  recipient_name?: string;
+  recipient_email?: string;
+  message?: string;
+  plan?: string;
+};
+
+// Gift code API functions
+export async function createGiftCode(request: GiftCodeCreateRequest): Promise<GiftCode> {
+  // Demo mode: return fake gift code
+  if (isDemoMode()) {
+    return {
+      id: "demo-gift-" + Math.random().toString(36).substring(7),
+      code: `DEMO-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+      purchaser_email: request.purchaser_email,
+      recipient_name: request.recipient_name,
+      recipient_email: request.recipient_email,
+      message: request.message,
+      plan: request.plan || "pro_annual",
+      status: "new",
+      expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      created_at: new Date().toISOString(),
+    };
+  }
+
+  const response = await apiFetch("/gift-codes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: "Failed to create gift code" }));
+    throw new Error(error.detail || "Failed to create gift code");
+  }
+
+  return response.json();
+}
+
+export async function redeemGiftCode(code: string, session: { access_token: string } | null): Promise<GiftCode> {
+  // Demo mode: return fake redemption
+  if (isDemoMode() || code.startsWith("DEMO-")) {
+    return {
+      id: "demo-redeemed-" + Math.random().toString(36).substring(7),
+      code: code,
+      plan: "pro_annual",
+      status: "redeemed",
+      redeemed_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+  }
+
+  return apiFetchWithAuth<GiftCode>(
+    "/gift-codes/redeem",
+    {
+      method: "POST",
+      body: JSON.stringify({ code }),
+    },
+    session
+  );
+}
+
+export async function getGiftCode(code: string): Promise<GiftCode> {
+  // Demo mode: return fake gift code
+  if (isDemoMode() || code.startsWith("DEMO-")) {
+    return {
+      id: "demo-gift-" + Math.random().toString(36).substring(7),
+      code: code,
+      recipient_name: "Demo Recipient",
+      purchaser_email: "demo@purchaser.com",
+      plan: "pro_annual",
+      status: "new",
+      expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      created_at: new Date().toISOString(),
+    };
+  }
+
+  return apiFetch<GiftCode>(`/gift-codes/${code}`, {
+    method: "GET",
+  });
+}
