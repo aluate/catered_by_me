@@ -138,7 +138,29 @@
 - [x] Improved ingredient parsing (normalize singular/plural, better unit handling)
 - [ ] Soft paywall (client-side limits)
 
-### Phase 4: Enhanced Recipe Input
+### Phase 3.5: UX Polish & Microcopy
+- [ ] First-run walkthrough
+- [ ] Starter pack / sample events
+- [ ] Inline explainer on dashboard
+- [ ] Microcopy pass (empty states, capacity jokes, grocery)
+- [ ] Visual hierarchy improvements (color coding, print grouping)
+- [ ] Shareable read-only links for events
+- [ ] Week view (roadmap addition)
+
+**Control Doc:** `control/WEB_PHASE3.5.md`
+
+### Phase 4: Launch Readiness
+- [ ] Error handling & user-facing messages
+- [ ] Observability & logging
+- [ ] Limits & abuse prevention
+- [ ] Email capture & list building
+- [ ] Pricing page clarity
+- [ ] Launch narrative & storytelling
+- [ ] Future considerations documented (timezones, export, accessibility, testing)
+
+**Control Doc:** `control/WEB_PHASE4.md`
+
+### Phase 4.5: Enhanced Recipe Input
 - [ ] URL import from recipe blogs (schema.org support)
 - [ ] PDF upload with OCR
 - [ ] Image upload (scanned recipes, photos)
