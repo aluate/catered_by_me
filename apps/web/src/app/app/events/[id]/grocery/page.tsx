@@ -206,17 +206,36 @@ export default function GroceryPage() {
           <Button variant="secondary" onClick={copyList}>
             Copy list
           </Button>
-          {limits.canExportPDF ? (
+          {(limits.canExportPDF || isDemoMode()) ? (
             <Link href={`/app/events/${eventId}/grocery/print`}>
               <Button variant="secondary">Print / Save PDF</Button>
             </Link>
           ) : (
-            <UpgradePrompt
-              feature="PDF export"
-              onDismiss={() => {}}
-            />
+            <div className="flex items-center">
+              <Link href={`/app/events/${eventId}/grocery/print`}>
+                <Button variant="secondary" disabled>
+                  Print / Save PDF
+                </Button>
+              </Link>
+              <span className="ml-2 text-xs text-text-muted">(Pro feature)</span>
+            </div>
           )}
         </div>
+        
+        {!limits.canExportPDF && !isDemoMode() && (
+          <UpgradePrompt
+            feature="PDF export"
+            onDismiss={() => {}}
+          />
+        )}
+        
+        {isDemoMode() && (
+          <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-3 text-center">
+            <p className="text-xs text-amber-800">
+              🎭 Demo Mode — This is a preview. All features unlocked.
+            </p>
+          </div>
+        )}
 
         {/* Content */}
         {itemsBySection.length === 0 && itemsByRecipe.length === 0 ? (
