@@ -1,5 +1,7 @@
 from typing import Optional
 from uuid import UUID
+import uuid
+import logging
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -8,6 +10,8 @@ from ..dependencies import require_auth, Settings, get_settings
 from ..lib.supabase_client import require_supabase
 from ..services.scheduler import build_schedule
 from ..models.recipes import Recipe as RecipeModel
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/events", tags=["events"])
 
