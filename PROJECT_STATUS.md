@@ -129,10 +129,13 @@
 - [x] Warnings added to Schedule model
 - [x] User profile integration for capacity checks
 
-#### Phase 3F: Polish & Monetization Prep
-- [ ] Grocery list enhancements
-- [ ] Print layout refinements
-- [ ] Pricing page
+#### Phase 3F: Polish & Monetization Prep ✅
+- [x] Grocery list enhancements (better parsing, localStorage, quantity edits)
+- [x] Print layout refinements (8.5x11, two-column, proper margins)
+- [x] Pricing page (/pricing) with Free/Pro tiers and Holiday Host Pass
+- [x] Feature flags system (featureFlags.ts) for soft paywall
+- [x] Grocery pages now use real Supabase data (not mock)
+- [x] Improved ingredient parsing (normalize singular/plural, better unit handling)
 - [ ] Soft paywall (client-side limits)
 
 ### Phase 4: Enhanced Recipe Input
