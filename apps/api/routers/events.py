@@ -72,7 +72,7 @@ async def list_events(
     """
     try:
         supabase = require_supabase()
-        response = supabase.table("events").select("*").eq("user_id", user_id).order("event_date", desc=True, nulls_last=True).execute()
+        response = supabase.table("events").select("*").eq("user_id", user_id).order("event_date", desc=True).execute()
         
         return [
             EventResponse(
