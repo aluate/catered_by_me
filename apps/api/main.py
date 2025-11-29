@@ -1,9 +1,11 @@
 from datetime import datetime
 from typing import Optional
 import logging
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.requests import Request
+from starlette.responses import Response
 from pydantic import BaseModel
 
 from .dependencies import get_settings, Settings, require_auth
