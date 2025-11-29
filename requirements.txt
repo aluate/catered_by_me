@@ -6,4 +6,7 @@ python-dotenv==1.0.0
 httpx==0.25.2
 beautifulsoup4==4.12.2
 lxml==4.9.3
+pyjwt>=2.8.0
+supabase>=2.0.0
+postgrest>=0.13.0
 
