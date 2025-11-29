@@ -7,6 +7,7 @@ import Button from "../components/ui/Button";
 import RecipeForm from "../components/RecipeForm";
 import ScheduleView from "../components/ScheduleView";
 import type { Schedule } from "../lib/api";
+import type { Recipe } from "../lib/api";
 
 export default function HomePage() {
   const [schedule, setSchedule] = useState<Schedule | null>(null);

@@ -36,6 +36,45 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    """Simple rate limiting middleware"""
+    # Skip rate limiting for health check and public endpoints
+    if request.url.path in ["/health", "/docs", "/openapi.json"]:
+        return await call_next(request)
+    
+    # Get user ID from auth header if present
+    auth_header = request.headers.get("Authorization")
+    user_id = "anonymous"
+    
+    if auth_header and auth_header.startswith("Bearer "):
+        try:
+            # Extract user ID from JWT (simplified - in production use proper JWT parsing)
+            # For now, use a hash of the token as user identifier
+            token = auth_header.split(" ")[1]
+            user_id = token[:16]  # Simplified user ID
+        except:
+            pass
+    
+    # Check rate limit
+    allowed, retry_after = check_rate_limit(user_id, request.url.path)
+    
+    if not allowed:
+        logger.warning(f"Rate limit exceeded for {user_id} on {request.url.path}")
+        return JSONResponse(
+            status_code=429,
+            content={
+                "error": "rate_limit_exceeded",
+                "message": "You're making requests a bit too quickly. Take a breath and try again in a minute.",
+                "retry_after": retry_after,
+            },
+            headers={"Retry-After": str(retry_after)},
+        )
+    
+    response = await call_next(request)
+    return response
+
 # Include routers
 app.include_router(recipes.router)
 app.include_router(events.router)

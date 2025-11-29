@@ -355,6 +355,17 @@ export async function detachRecipeFromEvent(
   );
 }
 
+export async function createShareLink(
+  eventId: string,
+  session: { access_token: string } | null
+): Promise<{ public_token: string; share_url: string }> {
+  return apiFetchWithAuth<{ public_token: string; share_url: string }>(
+    `/events/${eventId}/share`,
+    { method: "POST" },
+    session
+  );
+}
+
 export async function generateEventPlan(
   eventId: string,
   serveTimeOverride?: string,

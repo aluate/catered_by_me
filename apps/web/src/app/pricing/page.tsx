@@ -33,6 +33,59 @@ export default function PricingPage() {
             </p>
           </div>
 
+          {/* Feature Comparison Table */}
+          <div className="bg-card rounded-xl p-8 shadow-sm border border-gray-200 mb-12">
+            <h2 className="text-2xl font-bold text-ink mb-6 text-center">Feature Comparison</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4 font-semibold text-ink">Feature</th>
+                    <th className="text-center py-3 px-4 font-semibold text-ink">Free</th>
+                    <th className="text-center py-3 px-4 font-semibold text-ink">Pro</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  <tr>
+                    <td className="py-3 px-4 text-text-muted">Events</td>
+                    <td className="py-3 px-4 text-center">3</td>
+                    <td className="py-3 px-4 text-center font-semibold text-accent-primary">Unlimited</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 text-text-muted">Recipes</td>
+                    <td className="py-3 px-4 text-center">10</td>
+                    <td className="py-3 px-4 text-center font-semibold text-accent-primary">Unlimited</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 text-text-muted">Schedules</td>
+                    <td className="py-3 px-4 text-center">✓</td>
+                    <td className="py-3 px-4 text-center">✓</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 text-text-muted">Grocery Lists</td>
+                    <td className="py-3 px-4 text-center">✓</td>
+                    <td className="py-3 px-4 text-center">✓</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 text-text-muted">PDF Export</td>
+                    <td className="py-3 px-4 text-center text-gray-400">✗</td>
+                    <td className="py-3 px-4 text-center font-semibold text-accent-primary">✓</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 text-text-muted">Sharing</td>
+                    <td className="py-3 px-4 text-center text-gray-400">✗</td>
+                    <td className="py-3 px-4 text-center font-semibold text-accent-primary">✓</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 text-text-muted">Support</td>
+                    <td className="py-3 px-4 text-center text-text-muted">Community</td>
+                    <td className="py-3 px-4 text-center font-semibold text-accent-primary">Priority</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           {/* Pricing Cards */}
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             {/* Free Tier */}
