@@ -22,6 +22,8 @@ export default function GroceryPage() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"section" | "recipe">("section");
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+  
+  const limits = getUserLimits("free"); // TODO: Get actual user tier from profile
 
   useEffect(() => {
     if (authLoading) return;
@@ -204,9 +206,16 @@ export default function GroceryPage() {
           <Button variant="secondary" onClick={copyList}>
             Copy list
           </Button>
-          <Link href={`/app/events/${eventId}/grocery/print`}>
-            <Button variant="secondary">Print / Save PDF</Button>
-          </Link>
+          {limits.canExportPDF ? (
+            <Link href={`/app/events/${eventId}/grocery/print`}>
+              <Button variant="secondary">Print / Save PDF</Button>
+            </Link>
+          ) : (
+            <UpgradePrompt
+              feature="PDF export"
+              onDismiss={() => {}}
+            />
+          )}
         </div>
 
         {/* Content */}

@@ -1,5 +1,6 @@
 import { AuthProvider } from "../../components/auth/AuthProvider";
 import { ToastProvider } from "../../components/ui/Toast";
+import { ErrorBoundary } from "../../components/ErrorBoundary";
 
 export default function AppLayout({
   children,
@@ -7,9 +8,11 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AuthProvider>
-      <ToastProvider>{children}</ToastProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ToastProvider>{children}</ToastProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

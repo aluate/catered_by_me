@@ -4,9 +4,11 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../../components/auth/AuthProvider";
 import { useToast } from "../../../../components/ui/Toast";
-import { createRecipe } from "../../../../lib/api";
+import { createRecipe, listRecipes } from "../../../../lib/api";
 import { getMessage } from "../../../../lib/messages";
 import { apiErrorToMessage } from "../../../../lib/errors";
+import { getUserLimits, checkLimit } from "../../../../lib/featureFlags";
+import UpgradePrompt from "../../../../components/paywall/UpgradePrompt";
 import RecipeForm, { type RecipeFormData } from "../../../../components/recipes/RecipeForm";
 import Button from "../../../../components/ui/Button";
 
@@ -15,6 +17,8 @@ export default function NewRecipePage() {
   const { showToast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [recipeCount, setRecipeCount] = React.useState<number | null>(null);
+  const [showUpgrade, setShowUpgrade] = React.useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -23,10 +27,36 @@ export default function NewRecipePage() {
       window.location.href = "/auth/sign-in";
       return;
     }
+
+    // Check recipe count for free tier limit
+    loadRecipeCount();
   }, [session, authLoading]);
+
+  const loadRecipeCount = async () => {
+    if (!session) return;
+    try {
+      const recipes = await listRecipes(session);
+      setRecipeCount(recipes.length);
+      const limits = getUserLimits("free"); // TODO: Get actual user tier from profile
+      const check = checkLimit(recipes.length, limits.maxRecipes, "recipes");
+      if (!check.withinLimit) {
+        setShowUpgrade(true);
+      }
+    } catch (err) {
+      console.error("Failed to load recipe count:", err);
+    }
+  };
 
   const handleSubmit = async (data: RecipeFormData) => {
     if (!session) return;
+
+    // Check limit before submitting
+    const limits = getUserLimits("free"); // TODO: Get actual user tier
+    if (recipeCount !== null && recipeCount >= limits.maxRecipes) {
+      showToast("You've reached the free tier limit of 10 recipes. Upgrade to Pro for unlimited recipes.", "warning");
+      setShowUpgrade(true);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -47,7 +77,12 @@ export default function NewRecipePage() {
       showToast(getMessage("recipe_saved"), "success");
       router.push("/app/recipes");
     } catch (err) {
-      showToast(apiErrorToMessage(err), "error");
+      const errorMsg = apiErrorToMessage(err);
+      // Check if it's a limit error
+      if (errorMsg.includes("limit") || errorMsg.includes("Limit")) {
+        setShowUpgrade(true);
+      }
+      showToast(errorMsg, "error");
       throw err; // Let RecipeForm handle the error display
     } finally {
       setIsSubmitting(false);
@@ -77,6 +112,15 @@ export default function NewRecipePage() {
             to auto-fill.
           </p>
         </div>
+
+        {showUpgrade && recipeCount !== null && (
+          <UpgradePrompt
+            feature="recipes"
+            currentCount={recipeCount}
+            limit={getUserLimits("free").maxRecipes}
+            onDismiss={() => setShowUpgrade(false)}
+          />
+        )}
 
         <div className="bg-card rounded-xl p-8 shadow-sm border border-gray-200">
           <RecipeForm
