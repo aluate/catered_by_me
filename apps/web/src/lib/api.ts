@@ -48,29 +48,50 @@ export type Schedule = {
   warnings?: string[];  // Warning codes like "oven_overbooked", "prep_window_too_short"
 };
 
-async function apiFetch<T>(path: string, options: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
-  });
-
-  if (!res.ok) {
-    let message = `API error: ${res.status}`;
+async function apiFetch<T>(path: string, options: RequestInit, retries = 2): Promise<T> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const body = await res.json();
-      if (body.detail) {
-        message = typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail);
-      }
-    } catch {
-      // ignore JSON parse errors
-    }
-    throw new Error(message);
-  }
+      const res = await fetch(`${API_BASE_URL}${path}`, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {}),
+        },
+      });
 
-  return res.json() as Promise<T>;
+      if (!res.ok) {
+        let message = `API error: ${res.status}`;
+        try {
+          const body = await res.json();
+          if (body.detail) {
+            message = typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail);
+          }
+        } catch {
+          // ignore JSON parse errors
+        }
+        const error = new Error(message);
+        
+        // Retry on 5xx errors or network issues
+        if (attempt < retries && (res.status >= 500 || res.status === 0)) {
+          await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+          continue;
+        }
+        
+        throw error;
+      }
+
+      return res.json() as Promise<T>;
+    } catch (error) {
+      // If it's the last attempt or not retryable, throw
+      if (attempt === retries || !(error instanceof Error && (error.message.includes("fetch") || error.message.includes("network")))) {
+        throw error;
+      }
+      // Wait before retry
+      await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+    }
+  }
+  
+  throw new Error("Max retries exceeded");
 }
 
 export async function parseTextRecipe(input: {

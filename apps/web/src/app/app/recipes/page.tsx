@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../../../components/auth/AuthProvider";
 import { listRecipes, deleteRecipe, type SavedRecipe } from "../../../lib/api";
+import { getMessage } from "../../../lib/messages";
 import RecipeCard from "../../../components/recipes/RecipeCard";
 import Button from "../../../components/ui/Button";
 
@@ -100,7 +101,7 @@ export default function RecipesPage() {
         {recipes.length === 0 ? (
           <div className="bg-card rounded-xl p-12 text-center border border-gray-200">
             <div className="text-4xl mb-4">📝</div>
-            <h2 className="text-xl font-semibold text-ink mb-2">No recipes yet</h2>
+            <h2 className="text-xl font-semibold text-ink mb-2">{getMessage("no_recipes_yet")}</h2>
             <p className="text-text-muted mb-6">
               Start building your recipe bank. Add your first recipe to get cooking.
             </p>

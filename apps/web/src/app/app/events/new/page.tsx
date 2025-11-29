@@ -3,12 +3,16 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../../components/auth/AuthProvider";
+import { useToast } from "../../../../components/ui/Toast";
 import { createEvent } from "../../../../lib/api";
+import { getMessage } from "../../../../lib/messages";
+import { apiErrorToMessage } from "../../../../lib/errors";
 import EventForm, { type EventFormData } from "../../../../components/events/EventForm";
 import Button from "../../../../components/ui/Button";
 
 export default function NewEventPage() {
   const { session, loading: authLoading } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -38,8 +42,10 @@ export default function NewEventPage() {
         },
         session
       );
+      showToast(getMessage("event_saved"), "success");
       router.push("/app/events");
     } catch (err) {
+      showToast(apiErrorToMessage(err), "error");
       throw err;
     } finally {
       setIsSubmitting(false);

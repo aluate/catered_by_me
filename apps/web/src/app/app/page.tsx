@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../components/auth/AuthProvider";
 import { listEvents, listRecipes, getProfile, type SavedEvent, type SavedRecipe, type UserProfile } from "../../lib/api";
+import { getMessage } from "../../lib/messages";
 import Button from "../../components/ui/Button";
 import Link from "next/link";
 
@@ -96,6 +97,24 @@ export default function AppDashboard() {
           </p>
         </div>
 
+        {/* First-time user explainer */}
+        {events.length === 0 && recipes.length === 0 && (
+          <div className="bg-accent-primary/10 border-2 border-accent-primary/30 rounded-xl p-6 mb-8">
+            <h2 className="text-xl font-semibold text-ink mb-2">
+              Welcome to Catered By Me
+            </h2>
+            <p className="text-text-muted mb-4">
+              Catered By Me turns <em>what you want to cook</em> into <em>a real-time plan, grocery list, and timing map</em>.
+            </p>
+            <p className="text-sm text-text-muted mb-4">
+              Start by creating your first event, then attach recipes to generate your game plan.
+            </p>
+            <Link href="/app/events/new">
+              <Button variant="primary">Create your first event</Button>
+            </Link>
+          </div>
+        )}
+
         {/* Next Event */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-ink mb-4">Next event</h2>
@@ -119,7 +138,7 @@ export default function AppDashboard() {
           ) : (
             <div className="bg-card rounded-xl p-6 shadow-sm border border-gray-200">
               <h3 className="text-lg font-semibold text-ink mb-2">
-                No events on the calendar (yet)
+                {getMessage("no_upcoming_events")}
               </h3>
               <p className="text-sm text-text-muted mb-4">
                 You know something&apos;s coming. Start with the next dinner, game night, or chaos feast.
@@ -209,7 +228,7 @@ export default function AppDashboard() {
           <h2 className="text-xl font-semibold text-ink mb-4">Recent recipes</h2>
           {recentRecipes.length === 0 ? (
             <div className="bg-card rounded-xl p-6 shadow-sm border border-gray-200 text-center">
-              <p className="text-text-muted mb-4">No recipes yet.</p>
+              <p className="text-text-muted mb-4">{getMessage("no_recipes_yet")}</p>
               <Link href="/app/recipes/new">
                 <Button variant="primary">Add your first recipe</Button>
               </Link>

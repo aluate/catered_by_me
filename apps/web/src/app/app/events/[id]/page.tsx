@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../../../components/auth/AuthProvider";
+import { useToast } from "../../../../components/ui/Toast";
 import {
   getEvent,
   updateEvent,
@@ -15,6 +16,8 @@ import {
   type EventWithRecipes,
   type SavedRecipe,
 } from "../../../../lib/api";
+import { getMessage } from "../../../../lib/messages";
+import { apiErrorToMessage } from "../../../../lib/errors";
 import EventForm, { type EventFormData } from "../../../../components/events/EventForm";
 import Button from "../../../../components/ui/Button";
 import ScheduleView from "../../../../components/ScheduleView";
@@ -22,6 +25,7 @@ import type { Schedule } from "../../../../lib/api";
 
 export default function EventDetailPage() {
   const { session, loading: authLoading } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
   const params = useParams();
   const eventId = params.id as string;
@@ -155,8 +159,9 @@ export default function EventDetailPage() {
     try {
       const plan = await generateEventPlan(eventId, undefined, session);
       setSchedule(plan);
+      showToast(getMessage("schedule_generated"), "success");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to generate plan");
+      showToast(apiErrorToMessage(err), "error");
     }
   };
 

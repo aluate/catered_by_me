@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../../../components/auth/AuthProvider";
 import { listEvents, deleteEvent, type SavedEvent } from "../../../lib/api";
+import { getMessage } from "../../../lib/messages";
 import EventCard from "../../../components/events/EventCard";
 import Button from "../../../components/ui/Button";
 
@@ -98,7 +99,7 @@ export default function EventsPage() {
           <div>
             <h1 className="text-3xl font-bold text-ink mb-2">My Events</h1>
             <p className="text-text-muted">
-              No events yet. Either you&apos;re overdue for a dinner party, or you&apos;re finally resting.
+              {events.length === 0 ? getMessage("no_events_yet") : "Your upcoming and past events."}
             </p>
           </div>
           <Link href="/app/events/new">

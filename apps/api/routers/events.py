@@ -368,6 +368,10 @@ async def generate_event_plan(
     Uses event.event_date as serve_time unless serve_time is provided.
     """
     try:
+        logger.info(f"Generating plan for event {event_id}", extra={
+            "event_id": event_id,
+            "user_id": user_id,
+        })
         supabase = require_supabase()
         
         # Get event
@@ -425,6 +429,14 @@ async def generate_event_plan(
         
         # Generate schedule
         schedule = build_schedule(recipe_models, serve_time_dt, user_profile)
+        
+        logger.info(f"Schedule generated successfully for event {event_id}", extra={
+            "event_id": event_id,
+            "user_id": user_id,
+            "recipe_count": len(recipe_models),
+            "task_count": sum(len(r.tasks) for r in recipe_models),
+            "warning_count": len(schedule.warnings),
+        })
         
         # Convert to dict for JSON response
         return {

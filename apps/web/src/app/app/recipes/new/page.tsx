@@ -3,12 +3,16 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../../components/auth/AuthProvider";
+import { useToast } from "../../../../components/ui/Toast";
 import { createRecipe } from "../../../../lib/api";
+import { getMessage } from "../../../../lib/messages";
+import { apiErrorToMessage } from "../../../../lib/errors";
 import RecipeForm, { type RecipeFormData } from "../../../../components/recipes/RecipeForm";
 import Button from "../../../../components/ui/Button";
 
 export default function NewRecipePage() {
   const { session, loading: authLoading } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -40,8 +44,10 @@ export default function NewRecipePage() {
         },
         session
       );
+      showToast(getMessage("recipe_saved"), "success");
       router.push("/app/recipes");
     } catch (err) {
+      showToast(apiErrorToMessage(err), "error");
       throw err; // Let RecipeForm handle the error display
     } finally {
       setIsSubmitting(false);
