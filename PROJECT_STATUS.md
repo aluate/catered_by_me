@@ -106,12 +106,12 @@
 - [x] Save recipe from schedule
 - [x] Recipe API endpoints (CRUD - structure ready, needs Supabase client in Phase 3D)
 
-#### Phase 3C: "My Events" Real Data
-- [ ] Events list page (Upcoming/Past tabs)
-- [ ] Event create/edit pages
-- [ ] Attach recipes to events
-- [ ] Generate plan from event
-- [ ] Event API endpoints (CRUD)
+#### Phase 3C: "My Events" Real Data ✅
+- [x] Events list page (Upcoming/Past tabs)
+- [x] Event create/edit pages
+- [x] Attach recipes to events
+- [x] Generate plan from event
+- [x] Event API endpoints (CRUD - structure ready, needs Supabase client in Phase 3D)
 
 #### Phase 3D: Dashboard + Profile + Kitchen Capacity
 - [ ] Dashboard with real data (replace mock)
