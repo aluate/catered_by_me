@@ -136,6 +136,23 @@
 - [x] Feature flags system (featureFlags.ts) for soft paywall
 - [x] Grocery pages now use real Supabase data (not mock)
 - [x] Improved ingredient parsing (normalize singular/plural, better unit handling)
+
+#### Phase 3.5: UX Polish & Microcopy ✅
+- [x] Toast notification system (Toast.tsx, ToastProvider)
+- [x] Expanded microcopy (messages.ts with 10+ new keys)
+- [x] Empty states with personality (all pages use getMessage())
+- [x] First-time user explainer on dashboard
+- [x] Recipe color coding helper (colors.ts)
+- [x] Shareable read-only links for events (backend + frontend)
+- [x] Share page (/share/e/[token]) for public event viewing
+
+#### Phase 4: Launch Readiness ✅
+- [x] Central error handler (errors.ts) with user-friendly messages
+- [x] Retry logic in API calls (exponential backoff)
+- [x] Backend logging (main.py, events.py with structured logging)
+- [x] Rate limiting middleware (simple in-memory, configurable per endpoint)
+- [x] Email capture on landing page (waitlist API + form)
+- [x] Pricing page improvements (feature comparison table)
 - [ ] Soft paywall (client-side limits)
 
 ### Phase 3.5: UX Polish & Microcopy
