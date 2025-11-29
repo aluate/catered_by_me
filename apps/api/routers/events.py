@@ -419,8 +419,12 @@ async def generate_event_plan(
             
             recipe_models.append(recipe_model)
         
+        # Get user profile for capacity checks
+        profile_response = supabase.table("profiles").select("oven_capacity_lbs, burner_count").eq("id", user_id).execute()
+        user_profile = profile_response.data[0] if profile_response.data else None
+        
         # Generate schedule
-        schedule = build_schedule(recipe_models, serve_time_dt)
+        schedule = build_schedule(recipe_models, serve_time_dt, user_profile)
         
         # Convert to dict for JSON response
         return {

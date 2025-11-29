@@ -1,12 +1,16 @@
 from datetime import datetime, timedelta
-from typing import Iterable
+from typing import Iterable, Optional
 from collections import defaultdict
 
 from ..models.recipes import Recipe
 from ..models.schedule import Schedule, ScheduleLane, ScheduledTask
 
 
-def build_schedule(recipes: Iterable[Recipe], serve_time: datetime) -> Schedule:
+def build_schedule(
+    recipes: Iterable[Recipe],
+    serve_time: datetime,
+    user_profile: Optional[dict] = None  # Optional profile with oven_capacity_lbs, burner_count
+) -> Schedule:
     """
     Build a backwards-planned cooking schedule from recipes and serve time.
     
@@ -120,9 +124,98 @@ def build_schedule(recipes: Iterable[Recipe], serve_time: datetime) -> Schedule:
         tasks.sort(key=lambda t: t.start_time)
         lanes.append(ScheduleLane(station=station, tasks=tasks))
     
+    # Check for capacity issues and generate warnings
+    warnings = check_capacity_issues(lanes, serve_time, user_profile)
+    
     return Schedule(
         serve_time=serve_time,
         lanes=lanes,
-        notes=f"Scheduled {len(all_tasks)} tasks across {len(lanes)} stations"
+        notes=f"Scheduled {len(all_tasks)} tasks across {len(lanes)} stations",
+        warnings=warnings
     )
+
+
+def check_capacity_issues(
+    lanes: list[ScheduleLane],
+    serve_time: datetime,
+    user_profile: Optional[dict] = None
+) -> list[str]:
+    """
+    Analyze schedule for capacity issues and return warning codes.
+    
+    Checks:
+    - Oven overbooking (multiple tasks overlapping)
+    - Prep window too short (total prep time exceeds available window)
+    - Too many concurrent tasks
+    - Stove overbooking (if burner_count is set)
+    """
+    warnings = []
+    
+    # Find oven lane
+    oven_lane = next((lane for lane in lanes if lane.station == "oven"), None)
+    if oven_lane and len(oven_lane.tasks) > 0:
+        # Check for overlapping oven tasks (assuming 1 oven by default)
+        oven_tasks = sorted(oven_lane.tasks, key=lambda t: t.start_time)
+        for i in range(len(oven_tasks) - 1):
+            current = oven_tasks[i]
+            next_task = oven_tasks[i + 1]
+            
+            # If tasks overlap, we have an oven conflict
+            if current.end_time > next_task.start_time:
+                warnings.append("oven_overbooked")
+                break
+        
+        # Check if all tasks are oven with no prep time
+        prep_lane = next((lane for lane in lanes if lane.station == "prep"), None)
+        if not prep_lane or len(prep_lane.tasks) == 0:
+            # All oven, no prep - check if there's enough time before first oven task
+            first_oven_task = oven_tasks[0]
+            time_before_oven = (first_oven_task.start_time - serve_time).total_seconds() / 60
+            
+            # If first oven task starts very close to serve time, warn
+            if time_before_oven < 30:  # Less than 30 minutes before serve time
+                warnings.append("all_oven_no_prep")
+    
+    # Check prep window
+    prep_lane = next((lane for lane in lanes if lane.station == "prep"), None)
+    if prep_lane and len(prep_lane.tasks) > 0:
+        # Find earliest prep task and latest prep task
+        prep_tasks = sorted(prep_lane.tasks, key=lambda t: t.start_time)
+        earliest_prep = prep_tasks[0]
+        latest_prep = prep_tasks[-1]
+        
+        # Total prep time needed
+        total_prep_time = sum(task.duration_minutes for task in prep_tasks)
+        
+        # Available window (from earliest prep start to serve time)
+        available_window = (serve_time - earliest_prep.start_time).total_seconds() / 60
+        
+        # If total prep time is close to or exceeds available window, warn
+        if total_prep_time > available_window * 0.9:  # Using 90% threshold
+            warnings.append("prep_window_too_short")
+    
+    # Check stove capacity if user has burner_count set
+    if user_profile and user_profile.get("burner_count"):
+        burner_count = user_profile["burner_count"]
+        stove_lane = next((lane for lane in lanes if lane.station == "stove"), None)
+        if stove_lane and len(stove_lane.tasks) > burner_count:
+            # Check for overlapping tasks
+            stove_tasks = sorted(stove_lane.tasks, key=lambda t: t.start_time)
+            overlapping_count = 0
+            for i in range(len(stove_tasks) - 1):
+                current = stove_tasks[i]
+                next_task = stove_tasks[i + 1]
+                if current.end_time > next_task.start_time:
+                    overlapping_count += 1
+            
+            if overlapping_count >= burner_count:
+                warnings.append("capacity_overload")
+    
+    # Check for too many complex recipes (heuristic: many tasks)
+    total_tasks = sum(len(lane.tasks) for lane in lanes)
+    if total_tasks > 20:  # Arbitrary threshold
+        warnings.append("too_many_projects")
+    
+    # Remove duplicates
+    return list(set(warnings))
 

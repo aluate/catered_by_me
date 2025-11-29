@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { useAuthOptional } from "./auth/AuthProvider";
 import { createRecipe, type Recipe } from "../lib/api";
 import Button from "./ui/Button";
+import { getMessage, type MessageKey } from "../lib/messages";
 import type { Schedule, ScheduleLane } from "../lib/api";
 
 type Props = {
   schedule: Schedule | null;
+  recipe?: Recipe | null; // The parsed recipe that generated this schedule
 };
 
 const STATION_ORDER = ["prep", "stove", "oven", "counter", "passive"];
@@ -98,6 +100,23 @@ const ScheduleView: React.FC<Props> = ({ schedule, recipe }) => {
 
   const sortedLanes = sortLanes(schedule.lanes);
 
+  // Map warning codes to message keys
+  const getWarningMessage = (warningCode: string): string => {
+    const codeToKey: Record<string, MessageKey> = {
+      oven_overbooked: "oven_overbooked",
+      prep_window_too_short: "prep_window_too_short",
+      too_many_projects: "too_many_projects",
+      capacity_overload: "capacity_overload",
+      all_oven_no_prep: "all_oven_no_prep",
+    };
+    
+    const key = codeToKey[warningCode];
+    if (key) {
+      return getMessage(key);
+    }
+    return warningCode; // Fallback to code if no mapping
+  };
+
   return (
     <section id="schedule">
       <div className="mb-4">
@@ -119,7 +138,22 @@ const ScheduleView: React.FC<Props> = ({ schedule, recipe }) => {
             </Button>
           )}
         </div>
-        {schedule.notes && (
+        
+        {/* Warnings */}
+        {schedule.warnings && schedule.warnings.length > 0 && (
+          <div className="mt-2 mb-4 space-y-2">
+            {schedule.warnings.map((warning, idx) => (
+              <p
+                key={idx}
+                className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2"
+              >
+                {getWarningMessage(warning)}
+              </p>
+            ))}
+          </div>
+        )}
+        
+        {schedule.notes && !schedule.warnings && (
           <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
             {schedule.notes}
           </p>

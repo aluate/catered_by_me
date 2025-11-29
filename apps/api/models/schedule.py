@@ -24,4 +24,5 @@ class Schedule(BaseModel):
     serve_time: datetime
     lanes: list[ScheduleLane]
     notes: Optional[str] = None
+    warnings: list[str] = []  # Warning codes like "oven_overbooked", "prep_window_too_short"
 

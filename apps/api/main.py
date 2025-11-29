@@ -88,9 +88,11 @@ async def generate_schedule(
     """
     Generate a cooking schedule from one or more recipes.
     """
+    # Anonymous endpoint - no user profile available
     return build_schedule(
         recipes=request.recipes,
-        serve_time=request.serve_time
+        serve_time=request.serve_time,
+        user_profile=None
     )
 
 

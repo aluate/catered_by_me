@@ -45,6 +45,7 @@ export type Schedule = {
   serve_time: string;
   lanes: ScheduleLane[];
   notes: string | null;
+  warnings?: string[];  // Warning codes like "oven_overbooked", "prep_window_too_short"
 };
 
 async function apiFetch<T>(path: string, options: RequestInit): Promise<T> {

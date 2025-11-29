@@ -122,10 +122,12 @@
 - [x] All recipe endpoints fully implemented with Supabase
 - [x] All event endpoints fully implemented with Supabase
 
-#### Phase 3E: Capacity Coaching & Warnings
-- [ ] Backend capacity checks (oven conflicts, prep window)
-- [ ] Frontend warning display with personality messages
-- [ ] Integration with event plan generation
+#### Phase 3E: Capacity Coaching & Warnings ✅
+- [x] Backend capacity checks (oven conflicts, prep window)
+- [x] Frontend warning display with personality messages
+- [x] Integration with event plan generation
+- [x] Warnings added to Schedule model
+- [x] User profile integration for capacity checks
 
 #### Phase 3F: Polish & Monetization Prep
 - [ ] Grocery list enhancements
