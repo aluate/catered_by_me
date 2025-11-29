@@ -1,3 +1,5 @@
 # Routers package
-from . import waitlist
+from . import recipes, events, waitlist
+
+__all__ = ["recipes", "events", "waitlist"]
 
