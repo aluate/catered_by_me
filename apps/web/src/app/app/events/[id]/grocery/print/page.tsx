@@ -134,6 +134,11 @@ export default function PrintGroceryPage() {
           </p>
           <p className="text-xs text-text-muted">Page 1 of 1</p>
         </div>
+        {isDemoMode() && (
+          <p className="text-xs text-gray-400 text-center mt-2">
+            Generated in Demo Mode — Not final.
+          </p>
+        )}
       </div>
     </div>
   );
