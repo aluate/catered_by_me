@@ -153,6 +153,33 @@
 - [x] Rate limiting middleware (simple in-memory, configurable per endpoint)
 - [x] Email capture on landing page (waitlist API + form)
 - [x] Pricing page improvements (feature comparison table)
+
+#### Phase 5: Billing Prep ✅
+- [x] UpgradePrompt component for soft paywall
+- [x] Limit checking in event/recipe creation pages
+- [x] PDF export gating based on user tier
+- [x] Share feature gating (ready for Stripe integration)
+- [ ] **Stripe integration** (see `control/STRIPE_INTEGRATION.md`)
+
+#### Phase 6: Launch Hardening ✅
+- [x] ErrorBoundary component for React error handling
+- [x] Wrapped app layout with ErrorBoundary
+- [x] All critical error paths handled gracefully
+- [x] User-friendly error messages throughout
+
+---
+
+## 🎯 Next Steps
+
+### Ready for Implementation:
+1. **Stripe Integration** — See `control/STRIPE_INTEGRATION.md` and `PROMPT_STRIPE_IMPLEMENTATION.md`
+2. **Final Launch Polish** — See `PROMPT_FINAL_LAUNCH_POLISH.md`
+3. **Launch Checklist** — See `LAUNCH_CHECKLIST.md`
+
+### Optional Future Enhancements:
+- Recipe input upgrades (image OCR, URL parsing, PDF parsing)
+- Recipe color coding in schedule view
+- Additional microcopy expansion
 - [ ] Soft paywall (client-side limits)
 
 ### Phase 3.5: UX Polish & Microcopy
