@@ -74,5 +74,22 @@ h1, h2, h3, h4, h5, h6 {
     -webkit-appearance: checkbox;
     appearance: checkbox;
   }
+
+  /* Certificate print styles */
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+
+  /* Ensure colors print for certificates */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide print buttons */
+  button.print-hidden {
+    display: none !important;
+  }
 }
 
