@@ -9,6 +9,8 @@ from .models.recipes import Recipe
 from .models.schedule import Schedule
 from .services.parsing import parse_text_recipe
 from .services.scheduler import build_schedule
+from .routers import recipes
+from .routers import recipes
 
 app = FastAPI(title="Catered By Me API", version="0.1.0")
 
@@ -26,6 +28,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include routers
+app.include_router(recipes.router)
 
 
 @app.get("/health")

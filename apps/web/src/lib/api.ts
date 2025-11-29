@@ -93,3 +93,124 @@ export async function generateSchedule(input: {
     body: JSON.stringify(input),
   });
 }
+
+// Recipe CRUD API functions
+export type SavedRecipe = {
+  id: string;
+  user_id: string;
+  title: string;
+  category: "main" | "side" | "dessert" | "app" | "other";
+  base_headcount: number;
+  prep_time_minutes: number;
+  cook_time_minutes: number;
+  method: "oven" | "stovetop" | "no_cook" | "mixed";
+  day_before_ok: boolean;
+  source_type: "text" | "url" | "pdf" | "image";
+  source_raw: Record<string, unknown> | null;
+  normalized: Record<string, unknown> | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type RecipeCreateInput = {
+  title: string;
+  category: "main" | "side" | "dessert" | "app" | "other";
+  base_headcount: number;
+  prep_time_minutes?: number;
+  cook_time_minutes?: number;
+  method: "oven" | "stovetop" | "no_cook" | "mixed";
+  day_before_ok?: boolean;
+  source_type?: "text" | "url" | "pdf" | "image";
+  source_raw?: Record<string, unknown>;
+  normalized?: Record<string, unknown>;
+  notes?: string;
+};
+
+export type RecipeUpdateInput = Partial<RecipeCreateInput>;
+
+async function apiFetchWithAuth<T>(
+  path: string,
+  options: RequestInit,
+  session: { access_token: string } | null
+): Promise<T> {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    ...(options.headers || {}),
+  };
+
+  if (session?.access_token) {
+    headers["Authorization"] = `Bearer ${session.access_token}`;
+  }
+
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers,
+  });
+
+  if (!res.ok) {
+    let message = `API error: ${res.status}`;
+    try {
+      const body = await res.json();
+      if (body.detail) {
+        message = typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail);
+      }
+    } catch {
+      // ignore JSON parse errors
+    }
+    throw new Error(message);
+  }
+
+  if (res.status === 204) {
+    return undefined as T; // No content
+  }
+
+  return res.json() as Promise<T>;
+}
+
+export async function listRecipes(session: { access_token: string } | null): Promise<SavedRecipe[]> {
+  return apiFetchWithAuth<SavedRecipe[]>("/recipes", { method: "GET" }, session);
+}
+
+export async function getRecipe(
+  recipeId: string,
+  session: { access_token: string } | null
+): Promise<SavedRecipe> {
+  return apiFetchWithAuth<SavedRecipe>(`/recipes/${recipeId}`, { method: "GET" }, session);
+}
+
+export async function createRecipe(
+  input: RecipeCreateInput,
+  session: { access_token: string } | null
+): Promise<SavedRecipe> {
+  return apiFetchWithAuth<SavedRecipe>(
+    "/recipes",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+    session
+  );
+}
+
+export async function updateRecipe(
+  recipeId: string,
+  input: RecipeUpdateInput,
+  session: { access_token: string } | null
+): Promise<SavedRecipe> {
+  return apiFetchWithAuth<SavedRecipe>(
+    `/recipes/${recipeId}`,
+    {
+      method: "PUT",
+      body: JSON.stringify(input),
+    },
+    session
+  );
+}
+
+export async function deleteRecipe(
+  recipeId: string,
+  session: { access_token: string } | null
+): Promise<void> {
+  return apiFetchWithAuth<void>(`/recipes/${recipeId}`, { method: "DELETE" }, session);
+}

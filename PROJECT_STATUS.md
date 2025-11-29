@@ -99,12 +99,12 @@
 - [x] GET /users/me endpoint (placeholder - will be fully implemented in Phase 3D)
 - [x] Profile auto-creation (via database trigger)
 
-#### Phase 3B: "My Recipes" Real Data (NEXT)
-- [ ] Recipe list page with Supabase queries
-- [ ] Recipe create/edit pages
-- [ ] Recipe deletion
-- [ ] Save recipe from schedule
-- [ ] Recipe API endpoints (CRUD)
+#### Phase 3B: "My Recipes" Real Data ✅
+- [x] Recipe list page with Supabase queries
+- [x] Recipe create/edit pages
+- [x] Recipe deletion
+- [x] Save recipe from schedule
+- [x] Recipe API endpoints (CRUD - structure ready, needs Supabase client in Phase 3D)
 
 #### Phase 3C: "My Events" Real Data
 - [ ] Events list page (Upcoming/Past tabs)

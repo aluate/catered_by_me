@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { parseTextRecipe, generateSchedule, type Schedule } from "../lib/api";
+import { parseTextRecipe, generateSchedule, type Schedule, type Recipe } from "../lib/api";
 import Button from "./ui/Button";
 
 type Props = {
-  onScheduleGenerated: (schedule: Schedule) => void;
+  onScheduleGenerated: (schedule: Schedule, recipe: Recipe) => void;
 };
 
 const sampleRecipe = `Ingredients:
@@ -76,7 +76,7 @@ const RecipeForm: React.FC<Props> = ({ onScheduleGenerated }) => {
         serve_time: new Date(serveTime).toISOString(),
       });
 
-      onScheduleGenerated(schedule);
+      onScheduleGenerated(schedule, recipe);
 
       // scroll to schedule
       const el = document.getElementById("schedule");

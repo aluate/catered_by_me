@@ -10,6 +10,7 @@ import type { Schedule } from "../lib/api";
 
 export default function HomePage() {
   const [schedule, setSchedule] = useState<Schedule | null>(null);
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
 
   const scrollToForm = () => {
     const el = document.getElementById("app-area");
@@ -207,12 +208,17 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-8">
             {/* Left: Recipe Form */}
             <div className="bg-card rounded-xl p-6 shadow-sm border border-gray-200">
-              <RecipeForm onScheduleGenerated={setSchedule} />
+              <RecipeForm
+                onScheduleGenerated={(schedule, recipe) => {
+                  setSchedule(schedule);
+                  setRecipe(recipe);
+                }}
+              />
             </div>
 
             {/* Right: Schedule View */}
             <div className="bg-card rounded-xl p-6 shadow-sm border border-gray-200">
-              <ScheduleView schedule={schedule} />
+              <ScheduleView schedule={schedule} recipe={recipe} />
             </div>
           </div>
         </div>
