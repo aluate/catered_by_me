@@ -26,3 +26,53 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Print styles for grocery list */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #1E2220 !important;
+  }
+
+  /* Hide app chrome */
+  header,
+  nav,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Print page layout */
+  .print-page {
+    margin: 0.5in;
+    font-size: 12px;
+    color: #1E2220;
+  }
+
+  .print-header {
+    margin-bottom: 0.5in;
+  }
+
+  .print-columns {
+    column-count: 2;
+    column-gap: 0.3in;
+    column-fill: auto;
+  }
+
+  .print-section-card {
+    break-inside: avoid;
+    margin-bottom: 0.5rem;
+    page-break-inside: avoid;
+  }
+
+  .print-footer {
+    margin-top: 0.5in;
+    padding-top: 0.25in;
+  }
+
+  /* Ensure checkboxes print */
+  input[type="checkbox"] {
+    -webkit-appearance: checkbox;
+    appearance: checkbox;
+  }
+}
+
