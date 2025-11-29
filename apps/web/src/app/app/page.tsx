@@ -1,16 +1,62 @@
 "use client";
 
-import React from "react";
-import { mockDashboard, mockEvents, mockRecipes } from "../../lib/mockData";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../../components/auth/AuthProvider";
+import { listEvents, listRecipes, getProfile, type SavedEvent, type SavedRecipe, type UserProfile } from "../../lib/api";
 import Button from "../../components/ui/Button";
 import Link from "next/link";
 
 export default function AppDashboard() {
-  const nextEvent = mockEvents.find((e) => e.id === mockDashboard.nextEventId);
-  const weeklyPrep = mockEvents.find((e) => e.id === mockDashboard.weeklyPrepEventId);
-  const recentRecipes = mockRecipes.slice(0, 3);
+  const { session, loading: authLoading } = useAuth();
+  const [events, setEvents] = useState<SavedEvent[]>([]);
+  const [recipes, setRecipes] = useState<SavedRecipe[]>([]);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const formatDate = (dateString: string) => {
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!session) {
+      window.location.href = "/auth/sign-in";
+      return;
+    }
+
+    loadData();
+  }, [session, authLoading]);
+
+  const loadData = async () => {
+    if (!session) return;
+
+    try {
+      setLoading(true);
+      const [eventsData, recipesData, profileData] = await Promise.all([
+        listEvents(session),
+        listRecipes(session),
+        getProfile(session),
+      ]);
+      setEvents(eventsData);
+      setRecipes(recipesData);
+      setProfile(profileData);
+    } catch (err) {
+      console.error("Failed to load dashboard data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const now = new Date();
+  const upcomingEvents = events.filter((e) => !e.event_date || new Date(e.event_date) >= now);
+  const nextEvent = upcomingEvents.sort((a, b) => {
+    if (!a.event_date) return 1;
+    if (!b.event_date) return -1;
+    return new Date(a.event_date).getTime() - new Date(b.event_date).getTime();
+  })[0];
+  
+  const weeklyPrep = events.find((e) => e.event_type === "prep_week");
+  const recentRecipes = recipes.slice(0, 3);
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "No date set";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       weekday: "short",
@@ -21,6 +67,21 @@ export default function AppDashboard() {
     });
   };
 
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-body py-12">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-primary mx-auto mb-4"></div>
+            <p className="text-text-muted">Loading your kitchen...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const displayName = profile?.display_name || profile?.email?.split("@")[0] || "there";
+
   return (
     <div className="min-h-screen bg-body py-12">
       <div className="max-w-6xl mx-auto px-4">
@@ -28,7 +89,7 @@ export default function AppDashboard() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-ink mb-2">My Kitchen</h1>
           <p className="text-lg text-text-muted">
-            Hi, Hannah 👋
+            Hi, {displayName} 👋
           </p>
           <p className="text-sm text-text-muted mt-1">
             We see you, Weekday Warrior. Let&apos;s feed Future You.
@@ -44,28 +105,11 @@ export default function AppDashboard() {
                 {nextEvent.name}
               </h3>
               <p className="text-sm text-text-muted mb-4">
-                {formatDate(nextEvent.dateTime)} • {nextEvent.headcount} guests
+                {formatDate(nextEvent.event_date)} {nextEvent.headcount && `• ${nextEvent.headcount} guests`}
               </p>
-              <div className="flex gap-2 mb-4">
-                <span className="px-3 py-1 bg-accent-primary-soft text-accent-primary rounded-full text-xs font-medium">
-                  {nextEvent.status === "game_plan_ready"
-                    ? "Game plan ready"
-                    : nextEvent.status === "needs_recipes"
-                    ? "Needs recipes"
-                    : "Timing needs a tweak"}
-                </span>
-                <span className="px-3 py-1 bg-gray-100 text-text-muted rounded-full text-xs">
-                  {nextEvent.recipeIds.length} recipes
-                </span>
-              </div>
-              {nextEvent.status === "timing_needs_tweak" && (
-                <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2 mb-4">
-                  Eyes might be bigger than all those stomachs — your oven is overbooked.
-                </p>
-              )}
               <div className="flex gap-3">
                 <Link href={`/app/events/${nextEvent.id}`}>
-                  <Button variant="primary">Open game plan</Button>
+                  <Button variant="primary">Open event</Button>
                 </Link>
                 <Link href={`/app/events/${nextEvent.id}/grocery`}>
                   <Button variant="secondary">Grocery list</Button>
@@ -80,7 +124,9 @@ export default function AppDashboard() {
               <p className="text-sm text-text-muted mb-4">
                 You know something&apos;s coming. Start with the next dinner, game night, or chaos feast.
               </p>
-              <Button variant="primary">Plan a new event</Button>
+              <Link href="/app/events/new">
+                <Button variant="primary">Plan a new event</Button>
+              </Link>
             </div>
           )}
         </div>
@@ -108,7 +154,9 @@ export default function AppDashboard() {
               <p className="text-sm text-text-muted mb-4">
                 Want lunches and breakfasts to run on autopilot? Start a simple prep plan.
               </p>
-              <Button variant="primary">Set up weekly prep</Button>
+              <Link href="/app/events/new">
+                <Button variant="primary">Set up weekly prep</Button>
+              </Link>
             </div>
           )}
         </div>
@@ -117,9 +165,15 @@ export default function AppDashboard() {
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-ink mb-4">Quick actions</h2>
           <div className="flex flex-wrap gap-3">
-            <Button variant="primary">Plan a new event</Button>
-            <Button variant="secondary">Add a recipe</Button>
-            <Button variant="secondary">Plan my week</Button>
+            <Link href="/app/events/new">
+              <Button variant="primary">Plan a new event</Button>
+            </Link>
+            <Link href="/app/recipes/new">
+              <Button variant="secondary">Add a recipe</Button>
+            </Link>
+            <Link href="/app/events/new">
+              <Button variant="secondary">Plan my week</Button>
+            </Link>
           </div>
           <p className="text-xs text-text-muted mt-3">
             Start wherever your brain is: the party, the recipes, or the weekday grind.
@@ -127,31 +181,49 @@ export default function AppDashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-ink mb-4">Recent activity</h2>
-          <div className="bg-card rounded-xl p-6 shadow-sm border border-gray-200">
-            <ul className="space-y-2">
-              {mockDashboard.recentActivity.map((activity, idx) => (
-                <li key={idx} className="text-sm text-text-muted">
-                  {activity}
-                </li>
-              ))}
-            </ul>
+        {events.length > 0 || recipes.length > 0 ? (
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-ink mb-4">Recent activity</h2>
+            <div className="bg-card rounded-xl p-6 shadow-sm border border-gray-200">
+              <ul className="space-y-2">
+                {recipes.slice(0, 3).map((recipe) => (
+                  <li key={recipe.id} className="text-sm text-text-muted">
+                    You added &quot;{recipe.title}&quot; {new Date(recipe.created_at).toLocaleDateString()}
+                  </li>
+                ))}
+                {events.slice(0, 2).map((event) => (
+                  <li key={event.id} className="text-sm text-text-muted">
+                    You created &quot;{event.name}&quot; {new Date(event.created_at).toLocaleDateString()}
+                  </li>
+                ))}
+                {events.length === 0 && recipes.length === 0 && (
+                  <li className="text-sm text-text-muted">No activity yet. Start by adding a recipe or creating an event!</li>
+                )}
+              </ul>
+            </div>
           </div>
-        </div>
+        ) : null}
 
         {/* Recent Recipes */}
         <div>
           <h2 className="text-xl font-semibold text-ink mb-4">Recent recipes</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            {recentRecipes.map((recipe) => (
+          {recentRecipes.length === 0 ? (
+            <div className="bg-card rounded-xl p-6 shadow-sm border border-gray-200 text-center">
+              <p className="text-text-muted mb-4">No recipes yet.</p>
+              <Link href="/app/recipes/new">
+                <Button variant="primary">Add your first recipe</Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-4">
+              {recentRecipes.map((recipe) => (
               <div
                 key={recipe.id}
                 className="bg-card rounded-xl p-4 shadow-sm border border-gray-200"
               >
-                <h3 className="font-semibold text-ink mb-1">{recipe.name}</h3>
+                <h3 className="font-semibold text-ink mb-1">{recipe.title}</h3>
                 <p className="text-xs text-text-muted mb-2">
-                  Serves {recipe.baseServings} • {recipe.tags.join(", ")}
+                  Serves {recipe.base_headcount} • {recipe.category}
                 </p>
                 <Link href={`/app/recipes/${recipe.id}`}>
                   <Button variant="tertiary" className="text-sm">
@@ -159,8 +231,9 @@ export default function AppDashboard() {
                   </Button>
                 </Link>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

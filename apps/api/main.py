@@ -107,6 +107,13 @@ class ProfileResponse(BaseModel):
     updated_at: str
 
 
+class ProfileUpdateRequest(BaseModel):
+    display_name: Optional[str] = None
+    default_headcount: Optional[int] = None
+    oven_capacity_lbs: Optional[int] = None
+    burner_count: Optional[int] = None
+
+
 @app.get("/users/me", response_model=ProfileResponse)
 async def get_current_user_profile(
     user_id: str = Depends(require_auth),
@@ -116,17 +123,80 @@ async def get_current_user_profile(
     Get the current user's profile.
     Requires authentication.
     """
-    # For now, we'll need to query Supabase directly
-    # In a full implementation, you'd use the Supabase Python client
-    # For Phase 3A, we'll return a placeholder that indicates the endpoint works
-    # The actual Supabase query will be added when we have the client set up
-    
-    # TODO: Query Supabase profiles table using service_role key
-    # For now, return a response indicating auth is working
-    # This will be fully implemented in Phase 3D when we add Supabase client to backend
-    
-    raise HTTPException(
-        status_code=501,
-        detail="Profile endpoint not yet fully implemented. JWT verification is working. Supabase client integration needed."
-    )
+    try:
+        from .lib.supabase_client import require_supabase
+        supabase = require_supabase()
+        
+        response = supabase.table("profiles").select("*").eq("id", user_id).execute()
+        
+        if not response.data:
+            # Profile might not exist yet (shouldn't happen due to trigger, but handle gracefully)
+            raise HTTPException(status_code=404, detail="Profile not found")
+        
+        row = response.data[0]
+        return ProfileResponse(
+            id=str(row["id"]),
+            email=row["email"],
+            display_name=row.get("display_name"),
+            default_headcount=row.get("default_headcount"),
+            oven_capacity_lbs=row.get("oven_capacity_lbs"),
+            burner_count=row.get("burner_count"),
+            created_at=row["created_at"],
+            updated_at=row["updated_at"],
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch profile: {str(e)}")
+
+
+@app.put("/users/me", response_model=ProfileResponse)
+async def update_current_user_profile(
+    request: ProfileUpdateRequest,
+    user_id: str = Depends(require_auth),
+    settings: Settings = Depends(get_settings)
+):
+    """
+    Update the current user's profile.
+    Requires authentication.
+    """
+    try:
+        from .lib.supabase_client import require_supabase
+        supabase = require_supabase()
+        
+        # Build update dict
+        update_data = {}
+        if request.display_name is not None:
+            update_data["display_name"] = request.display_name
+        if request.default_headcount is not None:
+            update_data["default_headcount"] = request.default_headcount
+        if request.oven_capacity_lbs is not None:
+            update_data["oven_capacity_lbs"] = request.oven_capacity_lbs
+        if request.burner_count is not None:
+            update_data["burner_count"] = request.burner_count
+        
+        if not update_data:
+            # No fields to update, return existing profile
+            return await get_current_user_profile(user_id, settings)
+        
+        response = supabase.table("profiles").update(update_data).eq("id", user_id).execute()
+        
+        if not response.data:
+            raise HTTPException(status_code=500, detail="Failed to update profile")
+        
+        row = response.data[0]
+        return ProfileResponse(
+            id=str(row["id"]),
+            email=row["email"],
+            display_name=row.get("display_name"),
+            default_headcount=row.get("default_headcount"),
+            oven_capacity_lbs=row.get("oven_capacity_lbs"),
+            burner_count=row.get("burner_count"),
+            created_at=row["created_at"],
+            updated_at=row["updated_at"],
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update profile: {str(e)}")
 

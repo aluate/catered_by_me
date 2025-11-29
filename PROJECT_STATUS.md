@@ -113,11 +113,14 @@
 - [x] Generate plan from event
 - [x] Event API endpoints (CRUD - structure ready, needs Supabase client in Phase 3D)
 
-#### Phase 3D: Dashboard + Profile + Kitchen Capacity
-- [ ] Dashboard with real data (replace mock)
-- [ ] Profile page for editing defaults
-- [ ] Kitchen settings page
-- [ ] GET /users/me fully implemented (Supabase client in backend)
+#### Phase 3D: Dashboard + Profile + Kitchen Capacity ✅
+- [x] Dashboard with real data (replace mock)
+- [x] Profile page for editing defaults
+- [x] Kitchen settings page
+- [x] GET /users/me fully implemented (Supabase client in backend)
+- [x] PUT /users/me for updating profile
+- [x] All recipe endpoints fully implemented with Supabase
+- [x] All event endpoints fully implemented with Supabase
 
 #### Phase 3E: Capacity Coaching & Warnings
 - [ ] Backend capacity checks (oven conflicts, prep window)

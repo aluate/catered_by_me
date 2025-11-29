@@ -345,3 +345,40 @@ export async function generateEventPlan(
     session
   );
 }
+
+// User profile API functions
+export type UserProfile = {
+  id: string;
+  email: string;
+  display_name: string | null;
+  default_headcount: number | null;
+  oven_capacity_lbs: number | null;
+  burner_count: number | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ProfileUpdateInput = {
+  display_name?: string | null;
+  default_headcount?: number | null;
+  oven_capacity_lbs?: number | null;
+  burner_count?: number | null;
+};
+
+export async function getProfile(session: { access_token: string } | null): Promise<UserProfile> {
+  return apiFetchWithAuth<UserProfile>("/users/me", { method: "GET" }, session);
+}
+
+export async function updateProfile(
+  input: ProfileUpdateInput,
+  session: { access_token: string } | null
+): Promise<UserProfile> {
+  return apiFetchWithAuth<UserProfile>(
+    "/users/me",
+    {
+      method: "PUT",
+      body: JSON.stringify(input),
+    },
+    session
+  );
+}
