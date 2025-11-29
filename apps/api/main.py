@@ -43,8 +43,11 @@ app.add_middleware(
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
     """Simple rate limiting middleware"""
+    # Get path as string
+    path = str(request.url.path)
+    
     # Skip rate limiting for health check and public endpoints
-    if request.url.path in ["/health", "/docs", "/openapi.json"]:
+    if path in ["/health", "/docs", "/openapi.json"]:
         return await call_next(request)
     
     # Get user ID from auth header if present
@@ -61,10 +64,10 @@ async def rate_limit_middleware(request: Request, call_next):
             pass
     
     # Check rate limit
-    allowed, retry_after = check_rate_limit(user_id, request.url.path)
+    allowed, retry_after = check_rate_limit(user_id, path)
     
     if not allowed:
-        logger.warning(f"Rate limit exceeded for {user_id} on {request.url.path}")
+        logger.warning(f"Rate limit exceeded for {user_id} on {path}")
         return JSONResponse(
             status_code=429,
             content={
