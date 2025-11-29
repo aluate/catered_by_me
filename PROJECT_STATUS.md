@@ -1,6 +1,6 @@
 # Catered By Me - Project Status & Summary
 
-**Last Updated:** November 28, 2025
+**Last Updated:** November 29, 2025
 
 ## 🎯 Project Overview
 
@@ -88,13 +88,47 @@
 ## 🚧 What's Left To Do
 
 ### Phase 3: User Accounts & Recipe Bank (IN PROGRESS)
-- [ ] Supabase setup (auth + database)
-- [ ] Magic Link authentication (email-based login)
-- [ ] User profiles and saved recipes
-- [ ] Recipe library with tags
-- [ ] Reuse saved recipes in events
-- [ ] Event types (prep-week vs event)
-- [ ] Capacity warning system integration
+
+#### Phase 3A: Auth + Supabase Foundation ✅
+- [x] Supabase client setup in Next.js
+- [x] Auth Provider & Context (useAuth hook)
+- [x] Sign in/sign up pages (magic link flow)
+- [x] Auth callback handling
+- [x] Header login/logout wiring
+- [x] Backend JWT verification
+- [x] GET /users/me endpoint (placeholder - will be fully implemented in Phase 3D)
+- [x] Profile auto-creation (via database trigger)
+
+#### Phase 3B: "My Recipes" Real Data (NEXT)
+- [ ] Recipe list page with Supabase queries
+- [ ] Recipe create/edit pages
+- [ ] Recipe deletion
+- [ ] Save recipe from schedule
+- [ ] Recipe API endpoints (CRUD)
+
+#### Phase 3C: "My Events" Real Data
+- [ ] Events list page (Upcoming/Past tabs)
+- [ ] Event create/edit pages
+- [ ] Attach recipes to events
+- [ ] Generate plan from event
+- [ ] Event API endpoints (CRUD)
+
+#### Phase 3D: Dashboard + Profile + Kitchen Capacity
+- [ ] Dashboard with real data (replace mock)
+- [ ] Profile page for editing defaults
+- [ ] Kitchen settings page
+- [ ] GET /users/me fully implemented (Supabase client in backend)
+
+#### Phase 3E: Capacity Coaching & Warnings
+- [ ] Backend capacity checks (oven conflicts, prep window)
+- [ ] Frontend warning display with personality messages
+- [ ] Integration with event plan generation
+
+#### Phase 3F: Polish & Monetization Prep
+- [ ] Grocery list enhancements
+- [ ] Print layout refinements
+- [ ] Pricing page
+- [ ] Soft paywall (client-side limits)
 
 ### Phase 4: Enhanced Recipe Input
 - [ ] URL import from recipe blogs (schema.org support)

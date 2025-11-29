@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import Optional
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from .dependencies import get_settings, Settings
+from .dependencies import get_settings, Settings, require_auth
 from .models.recipes import Recipe
 from .models.schedule import Schedule
 from .services.parsing import parse_text_recipe
@@ -86,5 +86,42 @@ async def generate_schedule(
     return build_schedule(
         recipes=request.recipes,
         serve_time=request.serve_time
+    )
+
+
+# User endpoints
+
+class ProfileResponse(BaseModel):
+    id: str
+    email: str
+    display_name: Optional[str] = None
+    default_headcount: Optional[int] = None
+    oven_capacity_lbs: Optional[int] = None
+    burner_count: Optional[int] = None
+    created_at: str
+    updated_at: str
+
+
+@app.get("/users/me", response_model=ProfileResponse)
+async def get_current_user_profile(
+    user_id: str = Depends(require_auth),
+    settings: Settings = Depends(get_settings)
+):
+    """
+    Get the current user's profile.
+    Requires authentication.
+    """
+    # For now, we'll need to query Supabase directly
+    # In a full implementation, you'd use the Supabase Python client
+    # For Phase 3A, we'll return a placeholder that indicates the endpoint works
+    # The actual Supabase query will be added when we have the client set up
+    
+    # TODO: Query Supabase profiles table using service_role key
+    # For now, return a response indicating auth is working
+    # This will be fully implemented in Phase 3D when we add Supabase client to backend
+    
+    raise HTTPException(
+        status_code=501,
+        detail="Profile endpoint not yet fully implemented. JWT verification is working. Supabase client integration needed."
     )
 

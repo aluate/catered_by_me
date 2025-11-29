@@ -1,11 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import Button from "./ui/Button";
 import Logo from "./Logo";
+import { useAuthOptional } from "./auth/AuthProvider";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, signOut, loading } = useAuthOptional();
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -48,12 +51,25 @@ export default function Header() {
             >
               Contact
             </button>
-            <Button
-              variant="primary"
-              onClick={() => scrollToSection("app-area")}
-            >
-              Get Started
-            </Button>
+            {loading ? (
+              <div className="w-20 h-10"></div>
+            ) : user ? (
+              <>
+                <Link
+                  href="/app"
+                  className="text-sm text-text-muted hover:text-ink transition-colors"
+                >
+                  My Kitchen
+                </Link>
+                <Button variant="secondary" onClick={signOut}>
+                  Sign out
+                </Button>
+              </>
+            ) : (
+              <Link href="/auth/sign-in">
+                <Button variant="primary">Sign in</Button>
+              </Link>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -106,13 +122,29 @@ export default function Header() {
             >
               Contact
             </button>
-            <Button
-              variant="primary"
-              onClick={() => scrollToSection("app-area")}
-              className="w-full"
-            >
-              Get Started
-            </Button>
+            {loading ? null : user ? (
+              <>
+                <Link
+                  href="/app"
+                  className="block w-full text-left text-sm text-text-muted hover:text-ink py-2"
+                >
+                  My Kitchen
+                </Link>
+                <Button
+                  variant="secondary"
+                  onClick={signOut}
+                  className="w-full"
+                >
+                  Sign out
+                </Button>
+              </>
+            ) : (
+              <Link href="/auth/sign-in" className="w-full">
+                <Button variant="primary" className="w-full">
+                  Sign in
+                </Button>
+              </Link>
+            )}
           </nav>
         )}
       </div>
