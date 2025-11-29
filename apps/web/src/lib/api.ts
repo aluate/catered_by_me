@@ -205,6 +205,27 @@ export async function createRecipe(
   input: RecipeCreateInput,
   session: { access_token: string } | null
 ): Promise<SavedRecipe> {
+  if (isDemoMode()) {
+    // Return fake recipe for demo
+    return {
+      id: generateDemoId("recipe"),
+      user_id: "demo-user",
+      title: input.title,
+      category: input.category,
+      base_headcount: input.base_headcount,
+      prep_time_minutes: input.prep_time_minutes || 0,
+      cook_time_minutes: input.cook_time_minutes || 0,
+      method: input.method,
+      day_before_ok: input.day_before_ok || false,
+      source_type: input.source_type || "text",
+      source_raw: null,
+      normalized: null,
+      notes: input.notes || null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+  }
+
   return apiFetchWithAuth<SavedRecipe>(
     "/recipes",
     {
@@ -296,6 +317,23 @@ export async function createEvent(
   input: EventCreateInput,
   session: { access_token: string } | null
 ): Promise<SavedEvent> {
+  if (isDemoMode()) {
+    // Return fake event for demo
+    return {
+      id: generateDemoId("event"),
+      user_id: "demo-user",
+      name: input.name,
+      event_type: input.event_type,
+      event_date: input.event_date || null,
+      headcount: input.headcount || null,
+      location: input.location || null,
+      vibe: input.vibe || null,
+      notes: input.notes || null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+  }
+
   return apiFetchWithAuth<SavedEvent>(
     "/events",
     {

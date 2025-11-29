@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Button from "./ui/Button";
 import Logo from "./Logo";
+import DemoBadge from "./DemoBadge";
 import { useAuthOptional } from "./auth/AuthProvider";
 
 export default function Header() {
@@ -61,14 +62,18 @@ export default function Header() {
                 >
                   My Kitchen
                 </Link>
+                <DemoBadge />
                 <Button variant="secondary" onClick={signOut}>
                   Sign out
                 </Button>
               </>
             ) : (
-              <Link href="/auth/sign-in">
-                <Button variant="primary">Sign in</Button>
-              </Link>
+              <>
+                <DemoBadge />
+                <Link href="/auth/sign-in">
+                  <Button variant="primary">Sign in</Button>
+                </Link>
+              </>
             )}
           </nav>
 

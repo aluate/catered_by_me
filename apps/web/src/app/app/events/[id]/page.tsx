@@ -19,6 +19,8 @@ import {
 } from "../../../../lib/api";
 import { getMessage } from "../../../../lib/messages";
 import { apiErrorToMessage } from "../../../../lib/errors";
+import { isDemoMode } from "../../../../lib/demo";
+import DemoSuccess from "../../../../components/DemoSuccess";
 import EventForm, { type EventFormData } from "../../../../components/events/EventForm";
 import Button from "../../../../components/ui/Button";
 import ScheduleView from "../../../../components/ScheduleView";
@@ -41,6 +43,7 @@ export default function EventDetailPage() {
   const [showRecipePicker, setShowRecipePicker] = useState(false);
   const [selectedRecipeId, setSelectedRecipeId] = useState<string>("");
   const [recipeHeadcount, setRecipeHeadcount] = useState<number>(4);
+  const [showShareSuccess, setShowShareSuccess] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -169,6 +172,15 @@ export default function EventDetailPage() {
   const handleShareEvent = async () => {
     if (!session || !event) return;
 
+    if (isDemoMode()) {
+      // Demo mode: show confetti and success
+      const fakeUrl = `${window.location.origin}/share/e/demo-${Math.random().toString(36).slice(2)}`;
+      navigator.clipboard.writeText(fakeUrl);
+      showToast("🎉 Demo Mode: Share link copied! (This is what the upgrade flow will feel like!)", "success");
+      setShowShareSuccess(true);
+      return;
+    }
+
     try {
       const { share_url } = await createShareLink(eventId, session);
       const fullUrl = `${window.location.origin}${share_url}`;
@@ -227,6 +239,13 @@ export default function EventDetailPage() {
 
   return (
     <div className="min-h-screen bg-body py-12">
+      {showShareSuccess && (
+        <DemoSuccess
+          title="Look at you go!"
+          message="Everything is unlocked for the demo. This is what your guests will see when we launch."
+          onClose={() => setShowShareSuccess(false)}
+        />
+      )}
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="mb-8">

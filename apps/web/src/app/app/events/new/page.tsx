@@ -8,6 +8,7 @@ import { createEvent, listEvents } from "../../../../lib/api";
 import { getMessage } from "../../../../lib/messages";
 import { apiErrorToMessage } from "../../../../lib/errors";
 import { getUserLimits, checkLimit } from "../../../../lib/featureFlags";
+import { isDemoMode } from "../../../../lib/demo";
 import UpgradePrompt from "../../../../components/paywall/UpgradePrompt";
 import EventForm, { type EventFormData } from "../../../../components/events/EventForm";
 import Button from "../../../../components/ui/Button";
@@ -50,12 +51,15 @@ export default function NewEventPage() {
   const handleSubmit = async (data: EventFormData) => {
     if (!session) return;
 
-    // Check limit before submitting
-    const limits = getUserLimits("free"); // TODO: Get actual user tier
-    if (eventCount !== null && eventCount >= limits.maxEvents) {
-      showToast("You've reached the free tier limit of 3 events. Upgrade to Pro for unlimited events.", "warning");
-      setShowUpgrade(true);
-      return;
+    // In demo mode, skip limit checks
+    if (!isDemoMode()) {
+      // Check limit before submitting
+      const limits = getUserLimits("free"); // TODO: Get actual user tier
+      if (eventCount !== null && eventCount >= limits.maxEvents) {
+        showToast("You've reached the free tier limit of 3 events. Upgrade to Pro for unlimited events.", "warning");
+        setShowUpgrade(true);
+        return;
+      }
     }
 
     setIsSubmitting(true);

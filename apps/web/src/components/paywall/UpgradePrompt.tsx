@@ -1,8 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Button from "../ui/Button";
+import DemoSuccess from "../DemoSuccess";
+import { isDemoMode } from "../../lib/demo";
+import { useToast } from "../ui/Toast";
 
 interface UpgradePromptProps {
   feature: string;
@@ -17,7 +20,28 @@ export default function UpgradePrompt({
   limit,
   onDismiss,
 }: UpgradePromptProps) {
+  const { showToast } = useToast();
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const handleUpgrade = () => {
+    if (isDemoMode()) {
+      // Trigger confetti and success modal
+      showToast("🎉 Demo Mode: This is what the upgrade flow will feel like!", "success");
+      setShowSuccess(true);
+      return;
+    }
+    // In real mode, navigate to pricing
+  };
+
   return (
+    <>
+      {showSuccess && (
+        <DemoSuccess
+          title="Host with the most!"
+          message="You're seeing a demo of a Pro feature. This is what your guests will see when we launch."
+          onClose={() => setShowSuccess(false)}
+        />
+      )}
     <div className="bg-accent-secondary/20 border-2 border-accent-secondary rounded-xl p-6 mb-6">
       <div className="flex justify-between items-start mb-4">
         <div>
@@ -44,9 +68,15 @@ export default function UpgradePrompt({
         )}
       </div>
       <div className="flex gap-3">
-        <Link href="/pricing">
-          <Button variant="primary">View pricing</Button>
-        </Link>
+        {isDemoMode() ? (
+          <Button variant="primary" onClick={handleUpgrade}>
+            Try it (Demo)
+          </Button>
+        ) : (
+          <Link href="/pricing">
+            <Button variant="primary">View pricing</Button>
+          </Link>
+        )}
         {onDismiss && (
           <Button variant="secondary" onClick={onDismiss}>
             Maybe later
@@ -54,6 +84,7 @@ export default function UpgradePrompt({
         )}
       </div>
     </div>
+    </>
   );
 }
 

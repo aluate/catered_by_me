@@ -6,6 +6,7 @@ import { useAuthOptional } from "../../../../../../components/auth/AuthProvider"
 import { getEvent, type EventWithRecipes } from "../../../../../../lib/api";
 import { listRecipes, type SavedRecipe } from "../../../../../../lib/api";
 import { buildGroceryListForEvent } from "../../../../../../lib/grocery";
+import { isDemoMode } from "../../../../../../lib/demo";
 import Logo from "../../../../../../components/Logo";
 
 export default function PrintGroceryPage() {

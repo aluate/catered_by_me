@@ -1,5 +1,7 @@
 // apps/web/src/lib/featureFlags.ts
 
+import { isDemoMode } from "./demo";
+
 /**
  * Client-side feature flags and limits for monetization.
  * 
@@ -21,6 +23,16 @@ export interface UserLimits {
  * TODO: In Phase 5, this will check user's subscription status from backend.
  */
 export function getUserLimits(userTier: "free" | "pro" | "holiday_pass" = "free"): UserLimits {
+  // In demo mode, always return Pro limits
+  if (isDemoMode()) {
+    return {
+      maxEvents: Infinity,
+      maxRecipes: Infinity,
+      canExportPDF: true,
+      canShare: true,
+    };
+  }
+
   if (userTier === "pro" || userTier === "holiday_pass") {
     return {
       maxEvents: Infinity,

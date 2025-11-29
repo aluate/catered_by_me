@@ -97,6 +97,15 @@ export default function AppDashboard() {
           </p>
         </div>
 
+        {/* Demo mode banner */}
+        {isDemoMode() && (
+          <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 mb-6">
+            <p className="text-sm font-medium text-amber-800 text-center">
+              🎭 Demo Mode — All Pro features unlocked. Perfect for presentations!
+            </p>
+          </div>
+        )}
+
         {/* First-time user explainer */}
         {events.length === 0 && recipes.length === 0 && (
           <div className="bg-accent-primary/10 border-2 border-accent-primary/30 rounded-xl p-6 mb-8">

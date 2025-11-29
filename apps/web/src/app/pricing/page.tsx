@@ -8,11 +8,41 @@ import Button from "../../components/ui/Button";
 import Logo from "../../components/Logo";
 
 export default function PricingPage() {
+  const { showToast } = useToast();
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const handleUpgrade = (plan: "pro" | "founding") => {
+    if (isDemoMode()) {
+      showToast(`🎉 Demo Mode: ${plan === "pro" ? "Pro" : "Founding Host"} upgrade unlocked!`, "success");
+      setShowSuccess(true);
+      return;
+    }
+    // In real mode, this would trigger Stripe checkout
+  };
+
   return (
     <div className="min-h-screen bg-body">
       <Header />
       
       <main className="py-12">
+        {showSuccess && (
+          <DemoSuccess
+            title="Host with the most!"
+            message="You're seeing a demo of the upgrade flow. This is what the checkout experience will feel like!"
+            onClose={() => setShowSuccess(false)}
+          />
+        )}
+        
+        {isDemoMode() && (
+          <div className="max-w-4xl mx-auto px-4 mb-6">
+            <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 text-center">
+              <p className="text-sm font-medium text-amber-800">
+                🎭 You are viewing a demo. All Pro features are unlocked.
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="max-w-4xl mx-auto px-4">
           {/* Header */}
           <div className="text-center mb-12">
@@ -159,12 +189,20 @@ export default function PricingPage() {
                 </li>
               </ul>
               
-              <Button variant="primary" className="w-full" disabled>
-                Coming soon
-              </Button>
-              <p className="text-xs text-text-muted text-center mt-2">
-                Payment integration coming in Phase 5
-              </p>
+              {isDemoMode() ? (
+                <Button variant="primary" className="w-full" onClick={() => handleUpgrade("pro")}>
+                  Try Pro (Demo)
+                </Button>
+              ) : (
+                <>
+                  <Button variant="primary" className="w-full" disabled>
+                    Coming soon
+                  </Button>
+                  <p className="text-xs text-text-muted text-center mt-2">
+                    Payment integration coming in Phase 5
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
