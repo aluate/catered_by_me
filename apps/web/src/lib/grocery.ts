@@ -1,6 +1,6 @@
 // apps/web/src/lib/grocery.ts
 
-import type { Recipe, Event } from "./mockData";
+import type { SavedRecipe, SavedEvent, EventWithRecipes } from "./api";
 
 export type StoreSection =
   | "produce"
@@ -98,23 +98,48 @@ function classifyIngredient(ingredient: string): StoreSection {
 }
 
 /**
+ * Normalize ingredient name for merging (handle singular/plural)
+ */
+function normalizeIngredientName(name: string): string {
+  const lower = name.toLowerCase().trim();
+  
+  // Simple pluralization rules (basic cases)
+  const pluralRules: [RegExp, string][] = [
+    [/ies$/, "y"],      // "onions" -> "onion"
+    [/s$/, ""],         // "peppers" -> "pepper"
+    [/es$/, ""],        // "potatoes" -> "potato"
+  ];
+  
+  for (const [pattern, replacement] of pluralRules) {
+    if (pattern.test(lower)) {
+      return lower.replace(pattern, replacement);
+    }
+  }
+  
+  return lower;
+}
+
+/**
  * Extract quantity and name from an ingredient string
+ * Improved parsing with better unit handling
  */
 function parseIngredient(ingredient: string): { quantity?: string; name: string } {
-  // Simple heuristic: first 1-3 tokens might be quantity, rest is name
   const parts = ingredient.trim().split(/\s+/);
   
   if (parts.length <= 1) {
     return { name: ingredient };
   }
 
-  // Check if first part looks like a quantity (number, fraction, or unit)
+  // Check if first part looks like a quantity
   const firstPart = parts[0];
-  const isQuantity = /^\d+|\d+\/\d+|\d+\.\d+|lbs?|oz|cup|cups|tbsp|tsp|tablespoon|teaspoon/.test(firstPart);
+  const isQuantity = /^\d+|\d+\/\d+|\d+\.\d+/.test(firstPart);
 
   if (isQuantity && parts.length > 1) {
-    // First 1-2 parts might be quantity
-    if (parts.length >= 3 && /^lbs?|oz|cup|cups|tbsp|tsp/.test(parts[1])) {
+    // Check if second part is a unit
+    const secondPart = parts[1];
+    const isUnit = /^(lbs?|oz|cup|cups|tbsp|tsp|tablespoon|teaspoon|pound|pounds|ounce|ounces|gram|grams|kg|kilogram|kilograms)$/i.test(secondPart);
+    
+    if (isUnit && parts.length >= 3) {
       return {
         quantity: `${parts[0]} ${parts[1]}`,
         name: parts.slice(2).join(" "),
@@ -133,18 +158,14 @@ function parseIngredient(ingredient: string): { quantity?: string; name: string 
  * Build grocery list for an event
  */
 export function buildGroceryListForEvent(
-  eventId: string,
-  events: Event[],
-  recipes: Recipe[],
-  options?: { mode?: "event_only" | "week_scope" }
+  event: SavedEvent | EventWithRecipes | null,
+  allRecipes: SavedRecipe[]
 ): {
-  event: Event | null;
-  recipes: Recipe[];
+  event: SavedEvent | EventWithRecipes | null;
+  recipes: SavedRecipe[];
   itemsBySection: GrocerySection[];
   itemsByRecipe: RecipeGroceryItems[];
 } {
-  const event = events.find((e) => e.id === eventId) || null;
-
   if (!event) {
     return {
       event: null,
@@ -155,27 +176,63 @@ export function buildGroceryListForEvent(
   }
 
   // Get recipes for this event
-  const eventRecipes = recipes.filter((r) => event.recipeIds.includes(r.id));
+  let eventRecipes: SavedRecipe[] = [];
+  if ("recipes" in event && Array.isArray(event.recipes)) {
+    // EventWithRecipes - get full recipe data
+    const recipeIds = event.recipes.map((er) => er.recipe_id);
+    eventRecipes = allRecipes.filter((r) => recipeIds.includes(r.id));
+  } else {
+    // Fallback: if we only have event, we can't build grocery list
+    return {
+      event,
+      recipes: [],
+      itemsBySection: [],
+      itemsByRecipe: [],
+    };
+  }
 
   // Build items by recipe
   const itemsByRecipe: RecipeGroceryItems[] = eventRecipes.map((recipe) => {
-    const items: GroceryItem[] = recipe.ingredients.map((ingredient, idx) => {
+    // Extract ingredients from normalized recipe data
+    const normalized = recipe.normalized as { ingredients?: Array<{ name: string; quantity?: number; unit?: string }> } | null;
+    const ingredients: string[] = [];
+    
+    if (normalized?.ingredients) {
+      ingredients.push(...normalized.ingredients.map((ing) => {
+        const parts: string[] = [];
+        if (ing.quantity) parts.push(String(ing.quantity));
+        if (ing.unit) parts.push(ing.unit);
+        parts.push(ing.name);
+        return parts.join(" ");
+      }));
+    }
+    
+    const items: GroceryItem[] = ingredients.map((ingredient, idx) => {
       const { quantity, name } = parseIngredient(ingredient);
       const section = classifyIngredient(ingredient);
 
       return {
-        id: `${eventId}_${recipe.id}_${idx}`,
+        id: `${event.id}_${recipe.id}_${idx}`,
         name,
         quantity,
         section,
-        recipeNames: [recipe.name],
+        recipeNames: [recipe.title],
       };
     });
 
+    // Get target headcount from event if available
+    let targetHeadcount: number | undefined;
+    if ("recipes" in event && Array.isArray(event.recipes)) {
+      const eventRecipe = event.recipes.find((er) => er.recipe_id === recipe.id);
+      targetHeadcount = eventRecipe?.target_headcount;
+    }
+
     return {
       recipeId: recipe.id,
-      recipeName: recipe.name,
-      scaledServingsDescription: `Serves ${recipe.baseServings}`,
+      recipeName: recipe.title,
+      scaledServingsDescription: targetHeadcount 
+        ? `Serves ${recipe.base_headcount} → scaled to ${targetHeadcount}`
+        : `Serves ${recipe.base_headcount}`,
       items,
     };
   });
@@ -184,24 +241,40 @@ export function buildGroceryListForEvent(
   const itemsMap = new Map<string, GroceryItem>();
 
   eventRecipes.forEach((recipe) => {
-    recipe.ingredients.forEach((ingredient, idx) => {
+    // Extract ingredients from normalized recipe data
+    const normalized = recipe.normalized as { ingredients?: Array<{ name: string; quantity?: number; unit?: string }> } | null;
+    const ingredients: string[] = [];
+    
+    if (normalized?.ingredients) {
+      ingredients.push(...normalized.ingredients.map((ing) => {
+        const parts: string[] = [];
+        if (ing.quantity) parts.push(String(ing.quantity));
+        if (ing.unit) parts.push(ing.unit);
+        parts.push(ing.name);
+        return parts.join(" ");
+      }));
+    }
+    
+    ingredients.forEach((ingredient, idx) => {
       const { quantity, name } = parseIngredient(ingredient);
       const section = classifyIngredient(ingredient);
-      const key = `${section}_${name.toLowerCase()}`;
+      // Normalize name for merging (singular/plural)
+      const normalizedName = normalizeIngredientName(name);
+      const key = `${section}_${normalizedName}`;
 
       if (itemsMap.has(key)) {
         // Merge: add recipe name to existing item
         const existing = itemsMap.get(key)!;
-        if (!existing.recipeNames.includes(recipe.name)) {
-          existing.recipeNames.push(recipe.name);
+        if (!existing.recipeNames.includes(recipe.title)) {
+          existing.recipeNames.push(recipe.title);
         }
       } else {
         itemsMap.set(key, {
-          id: `${eventId}_${recipe.id}_${idx}`,
+          id: `${event.id}_${recipe.id}_${idx}`,
           name,
           quantity,
           section,
-          recipeNames: [recipe.name],
+          recipeNames: [recipe.title],
         });
       }
     });

@@ -1,16 +1,95 @@
 "use client";
 
-import React, { useState } from "react";
-import { mockEvents, mockRecipes } from "../../../../lib/mockData";
-import { buildGroceryListForEvent } from "../../../../lib/grocery";
-import Button from "../../../../components/ui/Button";
+import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { useAuth } from "../../../../../components/auth/AuthProvider";
+import { getEvent, type EventWithRecipes } from "../../../../../lib/api";
+import { listRecipes, type SavedRecipe } from "../../../../../lib/api";
+import { buildGroceryListForEvent } from "../../../../../lib/grocery";
+import Button from "../../../../../components/ui/Button";
 import Link from "next/link";
 
-export default function GroceryPage({ params }: { params: { id: string } }) {
-  const { event, recipes, itemsBySection, itemsByRecipe } =
-    buildGroceryListForEvent(params.id, mockEvents, mockRecipes);
-
+export default function GroceryPage() {
+  const params = useParams();
+  const eventId = params.id as string;
+  const { session, loading: authLoading } = useAuthOptional();
+  
+  const [event, setEvent] = useState<EventWithRecipes | null>(null);
+  const [allRecipes, setAllRecipes] = useState<SavedRecipe[]>([]);
+  const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"section" | "recipe">("section");
+  const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!session) {
+      window.location.href = "/auth/sign-in";
+      return;
+    }
+
+    loadData();
+  }, [session, authLoading, eventId]);
+
+  useEffect(() => {
+    // Load checked items from localStorage
+    if (eventId) {
+      const saved = localStorage.getItem(`grocery_checked_${eventId}`);
+      if (saved) {
+        try {
+          setCheckedItems(new Set(JSON.parse(saved)));
+        } catch {
+          // Ignore parse errors
+        }
+      }
+    }
+  }, [eventId]);
+
+  const loadData = async () => {
+    if (!session) return;
+
+    try {
+      setLoading(true);
+      const [eventData, recipesData] = await Promise.all([
+        getEvent(eventId, session),
+        listRecipes(session),
+      ]);
+      setEvent(eventData);
+      setAllRecipes(recipesData);
+    } catch (err) {
+      console.error("Failed to load grocery data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleCheck = (itemId: string) => {
+    const newChecked = new Set(checkedItems);
+    if (newChecked.has(itemId)) {
+      newChecked.delete(itemId);
+    } else {
+      newChecked.add(itemId);
+    }
+    setCheckedItems(newChecked);
+    
+    // Save to localStorage
+    if (eventId) {
+      localStorage.setItem(`grocery_checked_${eventId}`, JSON.stringify(Array.from(newChecked)));
+    }
+  };
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-body py-12">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-primary mx-auto mb-4"></div>
+            <p className="text-text-muted">Loading grocery list...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!event) {
     return (
@@ -22,17 +101,31 @@ export default function GroceryPage({ params }: { params: { id: string } }) {
     );
   }
 
-  const recipeNames = recipes.map((r) => r.name).join(", ");
+  const { recipes, itemsBySection, itemsByRecipe } = buildGroceryListForEvent(event, allRecipes);
+  const recipeNames = recipes.map((r) => r.title).join(", ");
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "No date set";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  };
 
   const copyList = () => {
-    let text = `Grocery list – ${event.name} (${event.headcount} guests)\n\n`;
+    let text = `Grocery list – ${event.name}${event.headcount ? ` (${event.headcount} guests)` : ""}\n\n`;
 
     if (viewMode === "section") {
       itemsBySection.forEach((section) => {
         text += `${section.label.toUpperCase()}\n\n`;
         section.items.forEach((item) => {
+          const checked = checkedItems.has(item.id) ? "✓ " : "- ";
           const qty = item.quantity ? `${item.quantity} ` : "";
-          text += `- ${qty}${item.name}`;
+          text += `${checked}${qty}${item.name}`;
           if (item.recipeNames.length > 0) {
             text += ` (${item.recipeNames.join(", ")})`;
           }
@@ -44,8 +137,9 @@ export default function GroceryPage({ params }: { params: { id: string } }) {
       itemsByRecipe.forEach((recipeGroup) => {
         text += `${recipeGroup.recipeName}\n`;
         recipeGroup.items.forEach((item) => {
+          const checked = checkedItems.has(item.id) ? "✓ " : "- ";
           const qty = item.quantity ? `${item.quantity} ` : "";
-          text += `- ${qty}${item.name}\n`;
+          text += `${checked}${qty}${item.name}\n`;
         });
         text += "\n";
       });
@@ -62,10 +156,13 @@ export default function GroceryPage({ params }: { params: { id: string } }) {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-ink mb-2">Grocery list</h1>
           <p className="text-lg text-text-muted mb-1">
-            {event.name} • {event.headcount} guests
+            {event.name} {event.headcount && `• ${event.headcount} guests`}
           </p>
+          {event.event_date && (
+            <p className="text-sm text-text-muted">{formatDate(event.event_date)}</p>
+          )}
           <p className="text-sm text-text-muted">
-            Includes: {recipeNames}
+            Includes: {recipeNames || "No recipes attached"}
           </p>
           <p className="text-xs text-text-muted mt-2">
             Scaled for your headcount and kitchen. Adjust as needed.
@@ -104,13 +201,20 @@ export default function GroceryPage({ params }: { params: { id: string } }) {
           <Button variant="secondary" onClick={copyList}>
             Copy list
           </Button>
-          <Link href={`/app/events/${params.id}/grocery/print`}>
+          <Link href={`/app/events/${eventId}/grocery/print`}>
             <Button variant="secondary">Print / Save PDF</Button>
           </Link>
         </div>
 
         {/* Content */}
-        {viewMode === "section" ? (
+        {itemsBySection.length === 0 && itemsByRecipe.length === 0 ? (
+          <div className="bg-card rounded-xl p-12 text-center border border-gray-200">
+            <p className="text-text-muted">No recipes attached to this event yet.</p>
+            <Link href={`/app/events/${eventId}`} className="mt-4 inline-block">
+              <Button variant="primary">Add recipes</Button>
+            </Link>
+          </div>
+        ) : viewMode === "section" ? (
           <div className="space-y-6">
             {itemsBySection.map((section) => (
               <div
@@ -129,6 +233,8 @@ export default function GroceryPage({ params }: { params: { id: string } }) {
                     <li key={item.id} className="flex items-start gap-3">
                       <input
                         type="checkbox"
+                        checked={checkedItems.has(item.id)}
+                        onChange={() => handleToggleCheck(item.id)}
                         className="mt-1 w-5 h-5 rounded border-gray-300 text-accent-primary focus:ring-accent-primary"
                       />
                       <div className="flex-1">
@@ -173,6 +279,8 @@ export default function GroceryPage({ params }: { params: { id: string } }) {
                     <li key={item.id} className="flex items-start gap-3">
                       <input
                         type="checkbox"
+                        checked={checkedItems.has(item.id)}
+                        onChange={() => handleToggleCheck(item.id)}
                         className="mt-1 w-5 h-5 rounded border-gray-300 text-accent-primary focus:ring-accent-primary"
                       />
                       <div className="text-base text-ink">
@@ -192,4 +300,3 @@ export default function GroceryPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
-
