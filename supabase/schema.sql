@@ -183,3 +183,39 @@ create trigger update_recipes_updated_at before update on public.recipes
 create trigger update_events_updated_at before update on public.events
   for each row execute procedure public.update_updated_at_column();
 
+-- Gift codes table
+create table if not exists public.gift_codes (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique,
+  purchaser_email text,
+  recipient_name text,
+  recipient_email text,
+  message text,
+  plan text not null default 'pro_annual',
+  status text not null default 'new', -- new | delivered | redeemed | expired
+  redeemed_by uuid references public.profiles(id),
+  redeemed_at timestamptz,
+  expires_at timestamptz not null default (now() + interval '1 year'),
+  created_at timestamptz not null default now()
+);
+
+-- Enable RLS on gift_codes
+alter table public.gift_codes enable row level security;
+
+-- Gift codes policies: anyone can read by code (for redemption), authenticated users can see their own redemptions
+create policy "Anyone can view gift codes by code"
+  on public.gift_codes for select
+  using (true); -- Allow public read for redemption
+
+create policy "Users can view their own redemptions"
+  on public.gift_codes for select
+  using (auth.uid() = redeemed_by);
+
+-- Backend service role can manage all gift codes
+-- (RLS will be bypassed by service role key)
+
+-- Index for code lookups
+create index idx_gift_codes_code on public.gift_codes(code);
+create index idx_gift_codes_status on public.gift_codes(status);
+create index idx_gift_codes_redeemed_by on public.gift_codes(redeemed_by);
+

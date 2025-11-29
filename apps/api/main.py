@@ -20,7 +20,7 @@ from .models.recipes import Recipe
 from .models.schedule import Schedule
 from .services.parsing import parse_text_recipe
 from .services.scheduler import build_schedule
-from .routers import recipes, events, waitlist
+from .routers import recipes, events, waitlist, gift_codes
 
 app = FastAPI(title="Catered By Me API", version="0.1.0")
 
@@ -85,6 +85,7 @@ async def rate_limit_middleware(request: Request, call_next):
 app.include_router(recipes.router)
 app.include_router(events.router)
 app.include_router(waitlist.router)
+app.include_router(gift_codes.router)
 
 
 @app.get("/health")

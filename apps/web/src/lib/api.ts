@@ -1,6 +1,9 @@
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8003";
 
+// Import demo mode check
+import { isDemoMode } from "./demo";
+
 export type Ingredient = {
   name: string;
   quantity: number | null;
