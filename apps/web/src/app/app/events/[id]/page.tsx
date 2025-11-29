@@ -12,6 +12,7 @@ import {
   attachRecipeToEvent,
   detachRecipeFromEvent,
   generateEventPlan,
+  createShareLink,
   listRecipes,
   type EventWithRecipes,
   type SavedRecipe,
@@ -165,6 +166,19 @@ export default function EventDetailPage() {
     }
   };
 
+  const handleShareEvent = async () => {
+    if (!session || !event) return;
+
+    try {
+      const { share_url } = await createShareLink(eventId, session);
+      const fullUrl = `${window.location.origin}${share_url}`;
+      navigator.clipboard.writeText(fullUrl);
+      showToast("Share link copied to clipboard!", "success");
+    } catch (err) {
+      showToast(apiErrorToMessage(err), "error");
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-body py-12">
@@ -266,9 +280,14 @@ export default function EventDetailPage() {
             <div className="bg-card rounded-xl p-6 shadow-sm border border-gray-200 mb-8">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold text-ink">Recipes</h2>
-                <Button variant="secondary" onClick={() => setShowRecipePicker(true)}>
-                  Add recipe
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="secondary" onClick={handleShareEvent}>
+                    Share
+                  </Button>
+                  <Button variant="secondary" onClick={() => setShowRecipePicker(true)}>
+                    Add recipe
+                  </Button>
+                </div>
               </div>
 
               {event.recipes.length === 0 ? (

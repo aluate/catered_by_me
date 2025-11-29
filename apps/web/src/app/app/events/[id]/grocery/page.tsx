@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { useAuth } from "../../../../../components/auth/AuthProvider";
+import { useAuthOptional } from "../../../../../components/auth/AuthProvider";
+import { useToast } from "../../../../../components/ui/Toast";
 import { getEvent, type EventWithRecipes } from "../../../../../lib/api";
 import { listRecipes, type SavedRecipe } from "../../../../../lib/api";
 import { buildGroceryListForEvent } from "../../../../../lib/grocery";
+import { getMessage } from "../../../../../lib/messages";
 import Button from "../../../../../components/ui/Button";
 import Link from "next/link";
 
@@ -13,6 +15,7 @@ export default function GroceryPage() {
   const params = useParams();
   const eventId = params.id as string;
   const { session, loading: authLoading } = useAuthOptional();
+  const { showToast } = useToast();
   
   const [event, setEvent] = useState<EventWithRecipes | null>(null);
   const [allRecipes, setAllRecipes] = useState<SavedRecipe[]>([]);
@@ -146,7 +149,7 @@ export default function GroceryPage() {
     }
 
     navigator.clipboard.writeText(text);
-    alert("Grocery list copied to clipboard!");
+    showToast(getMessage("grocery_copied"), "success");
   };
 
   return (
@@ -209,7 +212,7 @@ export default function GroceryPage() {
         {/* Content */}
         {itemsBySection.length === 0 && itemsByRecipe.length === 0 ? (
           <div className="bg-card rounded-xl p-12 text-center border border-gray-200">
-            <p className="text-text-muted">No recipes attached to this event yet.</p>
+            <p className="text-text-muted">{getMessage("no_recipes_attached")}</p>
             <Link href={`/app/events/${eventId}`} className="mt-4 inline-block">
               <Button variant="primary">Add recipes</Button>
             </Link>

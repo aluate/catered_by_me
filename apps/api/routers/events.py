@@ -427,8 +427,22 @@ async def generate_event_plan(
         profile_response = supabase.table("profiles").select("oven_capacity_lbs, burner_count").eq("id", user_id).execute()
         user_profile = profile_response.data[0] if profile_response.data else None
         
+        logger.info(f"Generating plan for event {event_id}", extra={
+            "event_id": event_id,
+            "user_id": user_id,
+            "recipe_count": len(recipe_models),
+        })
+        
         # Generate schedule
         schedule = build_schedule(recipe_models, serve_time_dt, user_profile)
+        
+        logger.info(f"Schedule generated successfully for event {event_id}", extra={
+            "event_id": event_id,
+            "user_id": user_id,
+            "recipe_count": len(recipe_models),
+            "task_count": sum(len(r.tasks) for r in recipe_models),
+            "warning_count": len(schedule.warnings),
+        })
         
         logger.info(f"Schedule generated successfully for event {event_id}", extra={
             "event_id": event_id,
@@ -462,5 +476,106 @@ async def generate_event_plan(
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"Failed to generate plan for event {event_id}", extra={
+            "event_id": event_id,
+            "user_id": user_id,
+            "error": str(e),
+        }, exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to generate plan: {str(e)}")
+
+
+@router.post("/{event_id}/share", response_model=dict)
+async def create_share_link(
+    event_id: str,
+    user_id: str = Depends(require_auth),
+    settings: Settings = Depends(get_settings),
+):
+    """
+    Generate a public share token for an event.
+    Creates a read-only link that doesn't require authentication.
+    """
+    try:
+        supabase = require_supabase()
+        
+        # Verify event belongs to user
+        event_check = supabase.table("events").select("id").eq("id", event_id).eq("user_id", user_id).execute()
+        if not event_check.data:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Generate public token
+        public_token = str(uuid.uuid4())
+        
+        # Update event with public token
+        supabase.table("events").update({"public_token": public_token}).eq("id", event_id).execute()
+        
+        logger.info(f"Share link created for event {event_id}", extra={
+            "event_id": event_id,
+            "user_id": user_id,
+        })
+        
+        return {"public_token": public_token, "share_url": f"/share/e/{public_token}"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to create share link for event {event_id}", extra={
+            "event_id": event_id,
+            "error": str(e),
+        }, exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to create share link: {str(e)}")
+
+
+@router.get("/public/{token}", response_model=dict)
+async def get_public_event(
+    token: str,
+    settings: Settings = Depends(get_settings),
+):
+    """
+    Get event details by public token (no auth required).
+    Returns read-only event data with schedule and grocery list.
+    """
+    try:
+        supabase = require_supabase()
+        
+        # Find event by public token
+        event_response = supabase.table("events").select("*").eq("public_token", token).execute()
+        if not event_response.data:
+            raise HTTPException(status_code=404, detail="Event not found or link expired")
+        
+        event_row = event_response.data[0]
+        
+        # Get attached recipes
+        recipes_response = supabase.table("event_recipes").select(
+            "recipe_id, target_headcount, course_order, is_primary, recipes!inner(title, normalized, base_headcount)"
+        ).eq("event_id", event_row["id"]).execute()
+        
+        recipes = []
+        for er_row in recipes_response.data:
+            recipes.append({
+                "recipe_id": str(er_row["recipe_id"]),
+                "recipe_title": er_row["recipes"]["title"],
+                "target_headcount": er_row["target_headcount"],
+                "course_order": er_row["course_order"],
+                "is_primary": er_row["is_primary"],
+            })
+        
+        # Return public event data (no sensitive info)
+        return {
+            "id": str(event_row["id"]),
+            "name": event_row["name"],
+            "event_type": event_row["event_type"],
+            "event_date": event_row.get("event_date"),
+            "headcount": event_row.get("headcount"),
+            "location": event_row.get("location"),
+            "vibe": event_row.get("vibe"),
+            "notes": event_row.get("notes"),
+            "recipes": recipes,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to fetch public event {token}", extra={
+            "token": token,
+            "error": str(e),
+        }, exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to fetch event: {str(e)}")
 

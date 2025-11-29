@@ -1,10 +1,18 @@
 from datetime import datetime
 from typing import Optional
+import logging
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from .dependencies import get_settings, Settings, require_auth
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 from .models.recipes import Recipe
 from .models.schedule import Schedule
 from .services.parsing import parse_text_recipe
