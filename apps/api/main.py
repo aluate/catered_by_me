@@ -1,11 +1,13 @@
 from datetime import datetime
 from typing import Optional
 import logging
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from .dependencies import get_settings, Settings, require_auth
+from .middleware.rate_limit import check_rate_limit
 
 # Configure logging
 logging.basicConfig(
@@ -17,7 +19,7 @@ from .models.recipes import Recipe
 from .models.schedule import Schedule
 from .services.parsing import parse_text_recipe
 from .services.scheduler import build_schedule
-from .routers import recipes, events
+from .routers import recipes, events, waitlist
 
 app = FastAPI(title="Catered By Me API", version="0.1.0")
 
@@ -78,6 +80,7 @@ async def rate_limit_middleware(request: Request, call_next):
 # Include routers
 app.include_router(recipes.router)
 app.include_router(events.router)
+app.include_router(waitlist.router)
 
 
 @app.get("/health")
