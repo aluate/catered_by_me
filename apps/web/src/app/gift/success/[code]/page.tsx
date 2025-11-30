@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import Header from "../../../../components/Header";
 import Footer from "../../../../components/Footer";
@@ -12,7 +12,6 @@ import { isDemoMode } from "../../../../lib/demo";
 
 export default function GiftSuccessPage() {
   const params = useParams();
-  const router = useRouter();
   const { showToast } = useToast();
   const code = params.code as string;
   

@@ -11,7 +11,6 @@ import { getUserLimits, checkLimit } from "../../../../lib/featureFlags";
 import { isDemoMode } from "../../../../lib/demo";
 import UpgradePrompt from "../../../../components/paywall/UpgradePrompt";
 import EventForm, { type EventFormData } from "../../../../components/events/EventForm";
-import Button from "../../../../components/ui/Button";
 
 export default function NewEventPage() {
   const { session, loading: authLoading } = useAuth();

@@ -67,6 +67,7 @@ export default function RecipeDetailPage() {
       // Show success message or redirect
       router.push("/app/recipes");
     } catch (err) {
+      console.error("Failed to update recipe:", err);
       throw err;
     } finally {
       setIsSubmitting(false);

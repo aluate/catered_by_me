@@ -104,6 +104,7 @@ export default function EventDetailPage() {
       setEvent({ ...updated, recipes: event.recipes });
       setIsEditing(false);
     } catch (err) {
+      console.error("Failed to update event:", err);
       throw err;
     } finally {
       setIsSubmitting(false);

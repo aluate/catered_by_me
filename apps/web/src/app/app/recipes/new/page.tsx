@@ -11,7 +11,6 @@ import { getUserLimits, checkLimit } from "../../../../lib/featureFlags";
 import { isDemoMode } from "../../../../lib/demo";
 import UpgradePrompt from "../../../../components/paywall/UpgradePrompt";
 import RecipeForm, { type RecipeFormData } from "../../../../components/recipes/RecipeForm";
-import Button from "../../../../components/ui/Button";
 
 export default function NewRecipePage() {
   const { session, loading: authLoading } = useAuth();

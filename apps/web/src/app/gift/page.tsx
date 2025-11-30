@@ -5,7 +5,6 @@ import Link from "next/link";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Button from "../../components/ui/Button";
-import Logo from "../../components/Logo";
 
 export default function GiftPage() {
   return (
@@ -64,14 +63,14 @@ export default function GiftPage() {
                 <span className="flex-shrink-0 w-8 h-8 bg-accent-primary text-white rounded-full flex items-center justify-center font-bold">1</span>
                 <div>
                   <h3 className="font-semibold text-ink mb-1">Choose your gift</h3>
-                  <p className="text-text-muted">Select "Catered By Me Pro — 1 Year" and add a personal message.</p>
+                  <p className="text-text-muted">Select &quot;Catered By Me Pro — 1 Year&quot; and add a personal message.</p>
                 </div>
               </li>
               <li className="flex gap-4">
                 <span className="flex-shrink-0 w-8 h-8 bg-accent-primary text-white rounded-full flex items-center justify-center font-bold">2</span>
                 <div>
                   <h3 className="font-semibold text-ink mb-1">Get your certificate</h3>
-                  <p className="text-text-muted">We'll generate a beautiful, printable certificate with a unique redemption code.</p>
+                  <p className="text-text-muted">We&apos;ll generate a beautiful, printable certificate with a unique redemption code.</p>
                 </div>
               </li>
               <li className="flex gap-4">

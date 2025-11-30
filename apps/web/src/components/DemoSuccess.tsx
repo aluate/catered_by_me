@@ -58,7 +58,6 @@ export default function DemoSuccess({ title, message, onClose }: DemoSuccessProp
       });
     }
 
-    let animationId: number;
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       canvas.width = window.innerWidth;
@@ -76,7 +75,7 @@ export default function DemoSuccess({ title, message, onClose }: DemoSuccessProp
       }
 
       if (particles.some((p) => p.y < window.innerHeight + 100)) {
-        animationId = requestAnimationFrame(animate);
+        requestAnimationFrame(animate);
       } else {
         document.body.removeChild(canvas);
       }

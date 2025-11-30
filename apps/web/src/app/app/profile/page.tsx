@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "../../../components/auth/AuthProvider";
 import { getProfile, updateProfile, type UserProfile } from "../../../lib/api";
 import Button from "../../../components/ui/Button";
@@ -9,7 +8,6 @@ import Link from "next/link";
 
 export default function ProfilePage() {
   const { session, loading: authLoading } = useAuth();
-  const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);

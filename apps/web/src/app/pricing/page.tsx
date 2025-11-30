@@ -5,7 +5,6 @@ import Link from "next/link";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Button from "../../components/ui/Button";
-import Logo from "../../components/Logo";
 import { useToast } from "../../components/ui/Toast";
 import { isDemoMode } from "../../lib/demo";
 import DemoSuccess from "../../components/DemoSuccess";

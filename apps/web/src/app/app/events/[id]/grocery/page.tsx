@@ -10,6 +10,7 @@ import { buildGroceryListForEvent } from "../../../../../lib/grocery";
 import { getMessage } from "../../../../../lib/messages";
 import Button from "../../../../../components/ui/Button";
 import Link from "next/link";
+import UpgradePrompt from "../../../../../components/paywall/UpgradePrompt";
 
 export default function GroceryPage() {
   const params = useParams();

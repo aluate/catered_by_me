@@ -54,7 +54,7 @@ export default function CertificatePage() {
       <div className="min-h-screen bg-body flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-ink mb-4">Certificate not found</h1>
-          <p className="text-text-muted">The gift code you're looking for doesn't exist.</p>
+          <p className="text-text-muted">The gift code you&apos;re looking for doesn&apos;t exist.</p>
         </div>
       </div>
     );

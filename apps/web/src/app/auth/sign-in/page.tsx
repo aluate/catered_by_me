@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "../../../components/auth/AuthProvider";
 import Button from "../../../components/ui/Button";
 import Logo from "../../../components/Logo";
@@ -11,7 +10,6 @@ export default function SignInPage() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { signInWithEmail } = useAuth();
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
