@@ -20,7 +20,7 @@ from .models.recipes import Recipe
 from .models.schedule import Schedule
 from .services.parsing import parse_text_recipe
 from .services.scheduler import build_schedule
-from .routers import recipes, events, waitlist, gift_codes
+from .routers import recipes, events, waitlist, gift_codes, billing
 
 app = FastAPI(title="Catered By Me API", version="0.1.0")
 
@@ -46,8 +46,8 @@ async def rate_limit_middleware(request: Request, call_next):
     # Get path as string
     path = str(request.url.path)
     
-    # Skip rate limiting for health check and public endpoints
-    if path in ["/health", "/docs", "/openapi.json"]:
+    # Skip rate limiting for health check, webhooks, and public endpoints
+    if path in ["/health", "/docs", "/openapi.json", "/billing/webhook"]:
         return await call_next(request)
     
     # Get user ID from auth header if present
@@ -86,6 +86,7 @@ app.include_router(recipes.router)
 app.include_router(events.router)
 app.include_router(waitlist.router)
 app.include_router(gift_codes.router)
+app.include_router(billing.router)
 
 
 @app.get("/health")

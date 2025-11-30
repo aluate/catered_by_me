@@ -17,6 +17,13 @@ class Settings(BaseSettings):
     SUPABASE_SERVICE_ROLE_KEY: Optional[str] = None
     SUPABASE_JWT_SECRET: Optional[str] = None
     
+    # Stripe settings
+    STRIPE_SECRET_KEY: Optional[str] = None
+    STRIPE_WEBHOOK_SECRET: Optional[str] = None
+    
+    # Frontend URL for redirects
+    FRONTEND_URL: str = "https://cateredby.me"
+    
     class Config:
         env_file = ".env"
         case_sensitive = False
