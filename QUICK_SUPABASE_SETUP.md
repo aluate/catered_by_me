@@ -20,10 +20,99 @@
 Project URL: https://xxxxx.supabase.co
 anon/public key: eyJhbGc... (long string)
 service_role key: eyJhbGc... (⚠️ SECRET - don't share!)
+
+
+import { createClient } from '@supabase/supabase-js'
+const supabaseUrl = 'https://hmumvzefougsiejvlxqi.supabase.co'
+const supabaseKey = process.env.SUPABASE_KEY
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+const SUPABASE_KEY = 'SUPABASE_CLIENT_API_KEY'
+
+const SUPABASE_URL = "https://hmumvzefougsiejvlxqi.supabase.co"
+const supabase = createClient(SUPABASE_URL, process.env.SUPABASE_KEY);
+
+const SERVICE_KEY = 'SUPABASE_SERVICE_KEY'
+
+
+const SUPABASE_URL = "https://hmumvzefougsiejvlxqi.supabase.co"
+const supabase = createClient(SUPABASE_URL, process.env.SERVICE_KEY);
+
+
+
+let { data, error } = await supabase.auth.signUp({
+  email: 'someone@email.com',
+  password: 'BBCuENctxZSmzudysHfm'
+})
+
+
+let { data, error } = await supabase.auth.signInWithPassword({
+  email: 'someone@email.com',
+  password: 'BBCuENctxZSmzudysHfm'
+})
+
+
+let { data, error } = await supabase.auth.signInWithOtp({
+  email: 'someone@email.com'
+})
+
+
+
+let { data, error } = await supabase.auth.signUp({
+  phone: '+13334445555',
+  password: 'some-password'
+})
+
+
+
+let { data, error } = await supabase.auth.signUp({
+  phone: '+13334445555',
+  password: 'some-password'
+})
+
+
+
+let { data, error } = await supabase.auth.verifyOtp({
+  phone: '+13334445555',
+  token: '123456',
+  type: 'sms'
+})
+
+
+let { data, error } = await supabase.auth.signInWithOAuth({
+  provider: 'github'
+})
+
+
+const { data: { user } } = await supabase.auth.getUser()
+
+
+let { data, error } = await supabase.auth.resetPasswordForEmail(email)
+
+
+
+
+const { data, error } = await supabase.auth.updateUser({
+  email: "new@email.com",
+  password: "new-password",
+  data: { hello: 'world' }
+})
+
+
+
+let { error } = await supabase.auth.signOut()
+
+
+let { data, error } = await supabase.auth.admin.inviteUserByEmail('someone@email.com')
+
+
+
 ```
 
 3. Go to **Settings** → **API** → **JWT Settings**
 4. Copy **JWT Secret**
+
+0uOWrELcDD/EU65qszh4e4uk3dID/HUMqsJjT8wanLOAF7xI+dVcwUGHKbC+UhmQ9QLaON+ZyT29hIDgCqcypA==
 
 ## 3. Run Database Schema
 
