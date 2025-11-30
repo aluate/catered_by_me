@@ -11,6 +11,8 @@ import { useToast } from "../../components/ui/Toast";
 import { isDemoMode } from "../../lib/demo";
 import DemoSuccess from "../../components/DemoSuccess";
 
+export const dynamic = 'force-dynamic';
+
 export default function RedeemPage() {
   const router = useRouter();
   const { session, loading: authLoading } = useAuth();

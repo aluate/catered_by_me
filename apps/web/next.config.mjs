@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable static optimization for problematic routes
   output: 'standalone',
+  // Disable static generation for routes that use client-side hooks
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
 };
 
 export default nextConfig;

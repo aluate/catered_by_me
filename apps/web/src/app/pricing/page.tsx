@@ -9,6 +9,8 @@ import { useToast } from "../../components/ui/Toast";
 import { isDemoMode } from "../../lib/demo";
 import DemoSuccess from "../../components/DemoSuccess";
 
+export const dynamic = 'force-dynamic';
+
 export default function PricingPage() {
   const { showToast } = useToast();
   const [showSuccess, setShowSuccess] = useState(false);

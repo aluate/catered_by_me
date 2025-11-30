@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthProvider } from "../components/auth/AuthProvider";
+import { ToastProvider } from "../components/ui/Toast";
 
 export const metadata: Metadata = {
   title: "Catered By Me",
@@ -18,8 +20,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AuthProvider>
+          <ToastProvider>
+            {children}
+          </ToastProvider>
+        </AuthProvider>
+      </body>
     </html>
   );
 }
-
