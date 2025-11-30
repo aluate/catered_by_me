@@ -1,7 +1,6 @@
 """
 Gift code service for creating and redeeming gift memberships.
 """
-import uuid
 import random
 import string
 from datetime import datetime, timedelta

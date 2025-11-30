@@ -12,6 +12,11 @@ create table public.profiles (
   default_headcount integer,
   oven_capacity_lbs integer,
   burner_count integer,
+  tier text default 'free' check (tier in ('free', 'pro', 'holiday_pass')),
+  subscription_status text,
+  renewal_date timestamp with time zone,
+  stripe_customer_id text,
+  stripe_subscription_id text,
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
 );
