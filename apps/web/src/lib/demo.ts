@@ -10,7 +10,7 @@
  * - Perfect for presentations and demos
  */
 
-export const DEMO_MODE = true;
+export const DEMO_MODE = false;
 
 /**
  * Check if we're in demo mode
