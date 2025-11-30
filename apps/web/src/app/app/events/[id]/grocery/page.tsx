@@ -8,6 +8,8 @@ import { getEvent, type EventWithRecipes } from "../../../../../lib/api";
 import { listRecipes, type SavedRecipe } from "../../../../../lib/api";
 import { buildGroceryListForEvent } from "../../../../../lib/grocery";
 import { getMessage } from "../../../../../lib/messages";
+import { getUserLimits } from "../../../../../lib/featureFlags";
+import { isDemoMode } from "../../../../../lib/demo";
 import Button from "../../../../../components/ui/Button";
 import Link from "next/link";
 import UpgradePrompt from "../../../../../components/paywall/UpgradePrompt";
