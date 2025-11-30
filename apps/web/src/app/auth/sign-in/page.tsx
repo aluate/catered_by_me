@@ -5,6 +5,8 @@ import { useAuth } from "../../../components/auth/AuthProvider";
 import Button from "../../../components/ui/Button";
 import Logo from "../../../components/Logo";
 
+export const dynamic = 'force-dynamic';
+
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -98,4 +100,3 @@ export default function SignInPage() {
     </div>
   );
 }
-

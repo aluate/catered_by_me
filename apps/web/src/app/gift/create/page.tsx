@@ -10,6 +10,8 @@ import { useToast } from "../../../components/ui/Toast";
 import { isDemoMode } from "../../../lib/demo";
 import DemoSuccess from "../../../components/DemoSuccess";
 
+export const dynamic = 'force-dynamic';
+
 export default function CreateGiftPage() {
   const router = useRouter();
   const { showToast } = useToast();

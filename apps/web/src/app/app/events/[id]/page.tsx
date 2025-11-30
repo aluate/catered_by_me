@@ -162,7 +162,7 @@ export default function EventDetailPage() {
     if (!session || !event) return;
 
     try {
-      const plan = await generateEventPlan(eventId, undefined, session);
+      const plan = await generateEventPlan(eventId, session);
       setSchedule(plan);
       showToast(getMessage("schedule_generated"), "success");
     } catch (err) {

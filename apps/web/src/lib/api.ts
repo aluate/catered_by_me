@@ -2,7 +2,7 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8003";
 
 // Import demo mode check
-import { isDemoMode } from "./demo";
+import { isDemoMode, generateDemoId } from "./demo";
 
 export type Ingredient = {
   name: string;
@@ -409,8 +409,8 @@ export async function createShareLink(
 
 export async function generateEventPlan(
   eventId: string,
-  serveTimeOverride?: string,
-  session: { access_token: string } | null
+  session: { access_token: string } | null,
+  serveTimeOverride?: string
 ): Promise<Schedule> {
   const params = serveTimeOverride ? `?serve_time=${encodeURIComponent(serveTimeOverride)}` : "";
   return apiFetchWithAuth<Schedule>(
@@ -499,18 +499,11 @@ export async function createGiftCode(request: GiftCodeCreateRequest): Promise<Gi
     };
   }
 
-  const response = await apiFetch("/gift-codes", {
+  return apiFetch<GiftCode>("/gift-codes", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),
   });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: "Failed to create gift code" }));
-    throw new Error(error.detail || "Failed to create gift code");
-  }
-
-  return response.json();
 }
 
 export async function redeemGiftCode(code: string, session: { access_token: string } | null): Promise<GiftCode> {
