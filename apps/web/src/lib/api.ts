@@ -159,9 +159,9 @@ async function apiFetchWithAuth<T>(
   options: RequestInit,
   session: { access_token: string } | null
 ): Promise<T> {
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    ...(options.headers || {}),
+    ...(options.headers as Record<string, string> || {}),
   };
 
   if (session?.access_token) {
@@ -170,7 +170,7 @@ async function apiFetchWithAuth<T>(
 
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
-    headers,
+    headers: headers as HeadersInit,
   });
 
   if (!res.ok) {
