@@ -8,7 +8,7 @@
 **Action:**
 - Click "Add Environment Variable"
 - Key: `STRIPE_SECRET_KEY`
-- Value: `sk_test_...REDACTED...`
+- Value: `sk_test_***REDACTED***51SZH87K3XMzVSHTYch1UKiYYaVPM854xAj79kN2x7nFGKv3vjTbNhT7UxuebSycU0mWMZLrzeaeF8oJdgdjhwIao00yzGZB0AY`
 - Save
 
 ---

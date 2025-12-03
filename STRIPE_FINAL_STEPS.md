@@ -19,7 +19,7 @@
 5. Click **"Add Environment Variable"**
 6. Fill in:
    - **Key:** `STRIPE_SECRET_KEY`
-   - **Value:** `sk_test_...REDACTED...`
+   - **Value:** `sk_test_***REDACTED***51SZH87K3XMzVSHTYch1UKiYYaVPM854xAj79kN2x7nFGKv3vjTbNhT7UxuebSycU0mWMZLrzeaeF8oJdgdjhwIao00yzGZB0AY`
 7. Click **"Save Changes"**
 8. ✅ **Done!** Render will automatically redeploy
 
@@ -81,7 +81,7 @@ Once you've completed both steps:
 
 **Stripe Secret Key:**
 ```
-sk_test_...REDACTED...
+sk_test_***REDACTED***51SZH87K3XMzVSHTYch1UKiYYaVPM854xAj79kN2x7nFGKv3vjTbNhT7UxuebSycU0mWMZLrzeaeF8oJdgdjhwIao00yzGZB0AY
 ```
 
 **Webhook URL:**
