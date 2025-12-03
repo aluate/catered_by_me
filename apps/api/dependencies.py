@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     # Stripe settings
     STRIPE_SECRET_KEY: Optional[str] = None
     STRIPE_WEBHOOK_SECRET: Optional[str] = None
+    STRIPE_ENABLED: bool = True  # Set to False to disable Stripe
     
     # Frontend URL for redirects
     FRONTEND_URL: str = "https://cateredby.me"
@@ -105,4 +106,15 @@ async def require_auth(
             status_code=401,
             detail="Authentication required"
         )
+    return user_id
+
+
+async def require_auth_optional(
+    user_id: Optional[str] = Depends(get_current_user_id),
+) -> Optional[str]:
+    """
+    Dependency that allows optional authentication.
+    Returns user_id if authenticated, None otherwise.
+    Use this for endpoints that work with or without auth.
+    """
     return user_id

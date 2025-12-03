@@ -22,10 +22,11 @@ stripe.api_key = None
 
 def get_stripe_client(settings: Settings = Depends(get_settings)):
     """Get configured Stripe client."""
-    if not settings.STRIPE_SECRET_KEY:
+    # Check if Stripe is enabled
+    if settings.STRIPE_ENABLED is False or not settings.STRIPE_SECRET_KEY:
         raise HTTPException(
-            status_code=500,
-            detail="Stripe not configured. Please set STRIPE_SECRET_KEY."
+            status_code=503,
+            detail="Stripe is currently disabled. Payment features are not available."
         )
     stripe.api_key = settings.STRIPE_SECRET_KEY
     return stripe
@@ -191,6 +192,11 @@ async def handle_webhook(
     Handle Stripe webhook events.
     This endpoint doesn't require authentication as Stripe signs the requests.
     """
+    # Check if Stripe is enabled
+    if settings.STRIPE_ENABLED is False:
+        logger.info("Stripe webhook received but Stripe is disabled - ignoring")
+        return JSONResponse({"status": "received", "message": "Stripe disabled"})
+    
     if not stripe_signature:
         logger.warning("Webhook called without Stripe signature")
         raise HTTPException(status_code=400, detail="Missing Stripe signature")

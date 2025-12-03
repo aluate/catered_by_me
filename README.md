@@ -19,6 +19,18 @@ Backend API for a cooking "day-of execution" planner that:
 pip install -r requirements.txt
 ```
 
+### Environment Variables
+
+**Minimum required:**
+- Supabase credentials (for auth/database)
+
+**Optional (to enable Stripe payments):**
+- `STRIPE_SECRET_KEY` - Stripe API secret key
+- `STRIPE_WEBHOOK_SECRET` - Stripe webhook signing secret
+- `STRIPE_ENABLED=true` (or leave unset, defaults to true if keys are present)
+
+**Note:** Stripe is **optional** for initial development. Set `STRIPE_ENABLED=false` to explicitly disable Stripe. The `/billing/checkout` and `/billing/webhook` endpoints will return appropriate errors when Stripe is disabled.
+
 ### Running the Development Server
 
 ```bash
