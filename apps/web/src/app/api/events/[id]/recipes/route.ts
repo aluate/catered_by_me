@@ -67,7 +67,7 @@ export async function POST(
         target_headcount,
         course_order,
         is_primary,
-      })
+      } as any)
       .select()
       .single();
 
