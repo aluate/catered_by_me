@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Request, Header
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-import stripe
 
 from ..dependencies import require_auth, Settings, get_settings
 from ..lib.supabase_client import require_supabase
@@ -16,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 
-# Initialize Stripe (will be configured when settings are loaded)
-stripe.api_key = None
+# Lazy import Stripe only when needed
+stripe = None
 
 
 def get_stripe_client(settings: Settings = Depends(get_settings)):
@@ -28,6 +27,18 @@ def get_stripe_client(settings: Settings = Depends(get_settings)):
             status_code=503,
             detail="Stripe is currently disabled. Payment features are not available."
         )
+    
+    # Lazy import to avoid import errors when Stripe is disabled
+    global stripe
+    if stripe is None:
+        try:
+            import stripe
+        except ImportError:
+            raise HTTPException(
+                status_code=503,
+                detail="Stripe package not installed. Payment features are not available."
+            )
+    
     stripe.api_key = settings.STRIPE_SECRET_KEY
     return stripe
 
@@ -79,12 +90,16 @@ def get_stripe_price_id(plan: str, stripe_client) -> str:
             status_code=500,
             detail=f"Stripe product '{product_name}' not found. Please create it in Stripe dashboard."
         )
-    except stripe.error.StripeError as e:
-        logger.error(f"Stripe error getting price ID: {str(e)}", exc_info=True)
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to get Stripe price: {str(e)}"
-        )
+    except Exception as e:
+        # Check if it's a Stripe error
+        error_type = type(e).__name__
+        if "Stripe" in error_type or "stripe" in str(type(e)).lower():
+            logger.error(f"Stripe error getting price ID: {str(e)}", exc_info=True)
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to get Stripe price: {str(e)}"
+            )
+        raise
 
 
 @router.post("/checkout", response_model=CheckoutResponse)
@@ -129,7 +144,9 @@ async def create_checkout_session(
             # Verify customer exists
             try:
                 stripe_client.Customer.retrieve(stripe_customer_id)
-            except stripe.error.InvalidRequestError:
+            except Exception as e:
+                # Check if it's a Stripe InvalidRequestError
+                if "InvalidRequestError" in str(type(e)) or "stripe" in str(type(e)).lower():
                 # Customer doesn't exist, create new one
                 customer = stripe_client.Customer.create(
                     email=user_email,
@@ -229,7 +246,11 @@ async def handle_webhook(
         except ValueError as e:
             logger.error(f"Invalid webhook payload: {str(e)}")
             raise HTTPException(status_code=400, detail="Invalid payload")
-        except stripe.error.SignatureVerificationError as e:
+        except Exception as e:
+            # Check if it's a Stripe SignatureVerificationError
+            if "SignatureVerificationError" not in str(type(e)) and "stripe" not in str(type(e)).lower():
+                raise
+            # It's a Stripe signature error
             logger.error(f"Invalid webhook signature: {str(e)}")
             raise HTTPException(status_code=400, detail="Invalid signature")
         
