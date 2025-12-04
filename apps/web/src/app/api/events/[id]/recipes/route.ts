@@ -75,11 +75,12 @@ export async function POST(
       return errorResponse("Failed to attach recipe", 500);
     }
 
-    if (!response.data) {
+    const responseData = response.data as any;
+    if (!responseData) {
       return errorResponse("Failed to attach recipe", 500);
     }
 
-    return successResponse({ success: true, id: response.data.id });
+    return successResponse({ success: true, id: responseData.id });
   } catch (error: any) {
     if (error.message === "Authentication required") {
       return errorResponse("Authentication required", 401);
