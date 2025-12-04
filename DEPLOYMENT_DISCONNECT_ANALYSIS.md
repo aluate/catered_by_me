@@ -77,10 +77,10 @@ After pushing, check:
 
 **Good News:** All API keys are already configured in `.env` file at `E:\My Drive\.env`:
 
-- ✅ **RENDER_API_KEY** - `rnd_U4lNyfnWzhOTrutyajQ4YiPkrjIp`
-- ✅ **GITHUB_TOKEN** - `ghp_...REDACTED...`
-- ✅ **STRIPE_SECRET_KEY** - `sk_test_51SZH87K3XMzVSHTY...` (configured)
-- ✅ **VERCEL_TOKEN** - `VERCEL_TOKEN_REDACTED`
+- ✅ **RENDER_API_KEY** - Configured (see `.env` file)
+- ✅ **GITHUB_TOKEN** - Configured (see `.env` file)
+- ✅ **STRIPE_SECRET_KEY** - Configured (see `.env` file)
+- ✅ **VERCEL_TOKEN** - Configured (see `.env` file)
 
 **Otto can use these immediately!** The deployment status skill will work once you run it.
 
