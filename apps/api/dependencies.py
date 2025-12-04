@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     # Stripe settings
     STRIPE_SECRET_KEY: Optional[str] = None
     STRIPE_WEBHOOK_SECRET: Optional[str] = None
-    STRIPE_ENABLED: bool = True  # Set to False to disable Stripe
+    STRIPE_ENABLED: bool = False  # Set to False to disable Stripe (disabled to fix deployment)
     
     # Frontend URL for redirects
     FRONTEND_URL: str = "https://cateredby.me"
