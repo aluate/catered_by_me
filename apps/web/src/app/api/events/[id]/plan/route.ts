@@ -67,13 +67,14 @@ export async function POST(
       return errorResponse("Event has no recipes attached", 400);
     }
 
-    if (!recipesResponse.data || recipesResponse.data.length === 0) {
+    const recipesData = recipesResponse.data as any[];
+    if (!recipesData || recipesData.length === 0) {
       return errorResponse("Event has no recipes attached", 400);
     }
 
     // Load and scale recipes
     const recipeModels: Recipe[] = [];
-    for (const erRow of recipesResponse.data) {
+    for (const erRow of recipesData) {
       const normalized = (erRow.recipes as any).normalized;
       if (!normalized) {
         return errorResponse(
