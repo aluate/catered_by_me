@@ -106,10 +106,11 @@ export async function POST(
       .eq("id", userId)
       .single();
 
-    const userProfile = profileResponse.data
+    const profileData = profileResponse.data as any;
+    const userProfile = profileData
       ? {
-          oven_capacity_lbs: profileResponse.data.oven_capacity_lbs,
-          burner_count: profileResponse.data.burner_count,
+          oven_capacity_lbs: profileData.oven_capacity_lbs,
+          burner_count: profileData.burner_count,
         }
       : null;
 
