@@ -31,11 +31,10 @@ export async function GET(
       return errorResponse("Event not found", 404);
     }
 
-    if (!eventResponse.data) {
+    const eventRow = eventResponse.data as any;
+    if (!eventRow) {
       return errorResponse("Event not found", 404);
     }
-
-    const eventRow = eventResponse.data;
 
     // Get attached recipes
     const recipesResponse = await supabase
