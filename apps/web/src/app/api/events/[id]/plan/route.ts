@@ -38,7 +38,7 @@ export async function POST(
       return errorResponse("Event not found", 404);
     }
 
-    const eventRow = eventResponse.data;
+    const eventRow = eventResponse.data as any;
     if (!eventRow) {
       return errorResponse("Event not found", 404);
     }
