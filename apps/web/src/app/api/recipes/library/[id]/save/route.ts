@@ -26,7 +26,11 @@ export async function POST(
       .eq("id", params.id)
       .single();
 
-    if (libraryResponse.error || !libraryResponse.data) {
+    if (libraryResponse.error) {
+      return errorResponse("Library recipe not found", 404);
+    }
+
+    if (!libraryResponse.data) {
       return errorResponse("Library recipe not found", 404);
     }
 
@@ -54,7 +58,11 @@ export async function POST(
       .select()
       .single();
 
-    if (response.error || !response.data) {
+    if (response.error) {
+      return errorResponse("Failed to save recipe", 500);
+    }
+
+    if (!response.data) {
       return errorResponse("Failed to save recipe", 500);
     }
 

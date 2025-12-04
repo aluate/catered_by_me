@@ -29,7 +29,11 @@ export async function POST(request: NextRequest) {
       .eq("code", code)
       .single();
 
-    if (fetchResponse.error || !fetchResponse.data) {
+    if (fetchResponse.error) {
+      return errorResponse("Gift code not found", 404);
+    }
+
+    if (!fetchResponse.data) {
       return errorResponse("Gift code not found", 404);
     }
 

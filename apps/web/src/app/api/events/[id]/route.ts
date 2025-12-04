@@ -27,7 +27,11 @@ export async function GET(
       .eq("user_id", userId)
       .single();
 
-    if (eventResponse.error || !eventResponse.data) {
+    if (eventResponse.error) {
+      return errorResponse("Event not found", 404);
+    }
+
+    if (!eventResponse.data) {
       return errorResponse("Event not found", 404);
     }
 
@@ -98,7 +102,11 @@ export async function PUT(
       .eq("user_id", userId)
       .single();
 
-    if (checkResponse.error || !checkResponse.data) {
+    if (checkResponse.error) {
+      return errorResponse("Event not found", 404);
+    }
+
+    if (!checkResponse.data) {
       return errorResponse("Event not found", 404);
     }
 
@@ -150,7 +158,11 @@ export async function PUT(
       .select()
       .single();
 
-    if (response.error || !response.data) {
+    if (response.error) {
+      return errorResponse("Failed to update event", 500);
+    }
+
+    if (!response.data) {
       return errorResponse("Failed to update event", 500);
     }
 

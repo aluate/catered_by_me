@@ -19,7 +19,11 @@ export async function GET(
       .eq("id", params.id)
       .single();
 
-    if (response.error || !response.data) {
+    if (response.error) {
+      return errorResponse("Recipe not found", 404);
+    }
+
+    if (!response.data) {
       return errorResponse("Recipe not found", 404);
     }
 

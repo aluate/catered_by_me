@@ -27,7 +27,11 @@ export async function POST(
       .eq("user_id", userId)
       .single();
 
-    if (eventCheck.error || !eventCheck.data) {
+    if (eventCheck.error) {
+      return errorResponse("Event not found", 404);
+    }
+
+    if (!eventCheck.data) {
       return errorResponse("Event not found", 404);
     }
 

@@ -34,7 +34,11 @@ export async function POST(
       .eq("user_id", userId)
       .single();
 
-    if (eventCheck.error || !eventCheck.data) {
+    if (eventCheck.error) {
+      return errorResponse("Event not found", 404);
+    }
+
+    if (!eventCheck.data) {
       return errorResponse("Event not found", 404);
     }
 
@@ -46,7 +50,11 @@ export async function POST(
       .eq("user_id", userId)
       .single();
 
-    if (recipeCheck.error || !recipeCheck.data) {
+    if (recipeCheck.error) {
+      return errorResponse("Recipe not found", 404);
+    }
+
+    if (!recipeCheck.data) {
       return errorResponse("Recipe not found", 404);
     }
 
@@ -63,7 +71,11 @@ export async function POST(
       .select()
       .single();
 
-    if (response.error || !response.data) {
+    if (response.error) {
+      return errorResponse("Failed to attach recipe", 500);
+    }
+
+    if (!response.data) {
       return errorResponse("Failed to attach recipe", 500);
     }
 

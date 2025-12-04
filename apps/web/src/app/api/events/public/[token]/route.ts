@@ -19,7 +19,11 @@ export async function GET(
       .eq("public_token", params.token)
       .single();
 
-    if (eventResponse.error || !eventResponse.data) {
+    if (eventResponse.error) {
+      return errorResponse("Event not found or link expired", 404);
+    }
+
+    if (!eventResponse.data) {
       return errorResponse("Event not found or link expired", 404);
     }
 

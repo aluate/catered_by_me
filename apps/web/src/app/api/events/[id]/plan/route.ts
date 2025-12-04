@@ -34,7 +34,11 @@ export async function POST(
       .eq("user_id", userId)
       .single();
 
-    if (eventResponse.error || !eventResponse.data) {
+    if (eventResponse.error) {
+      return errorResponse("Event not found", 404);
+    }
+
+    if (!eventResponse.data) {
       return errorResponse("Event not found", 404);
     }
 
@@ -60,7 +64,11 @@ export async function POST(
       .select("recipe_id, target_headcount, recipes!inner(normalized, base_headcount)")
       .eq("event_id", params.id);
 
-    if (recipesResponse.error || !recipesResponse.data || recipesResponse.data.length === 0) {
+    if (recipesResponse.error) {
+      return errorResponse("Event has no recipes attached", 400);
+    }
+
+    if (!recipesResponse.data || recipesResponse.data.length === 0) {
       return errorResponse("Event has no recipes attached", 400);
     }
 

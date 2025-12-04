@@ -58,7 +58,11 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    if (response.error || !response.data) {
+    if (response.error) {
+      return errorResponse("Failed to create gift code", 500);
+    }
+
+    if (!response.data) {
       return errorResponse("Failed to create gift code", 500);
     }
 

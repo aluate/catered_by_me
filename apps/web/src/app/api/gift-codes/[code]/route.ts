@@ -19,7 +19,11 @@ export async function GET(
       .eq("code", params.code)
       .single();
 
-    if (response.error || !response.data) {
+    if (response.error) {
+      return errorResponse("Gift code not found", 404);
+    }
+
+    if (!response.data) {
       return errorResponse("Gift code not found", 404);
     }
 
