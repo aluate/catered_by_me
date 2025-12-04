@@ -1,5 +1,5 @@
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8003";
+// Use relative URLs for API calls - Vercel handles routing to API routes
+const API_BASE_URL = "";
 
 // Import demo mode check
 import { isDemoMode, generateDemoId } from "./demo";
@@ -54,7 +54,7 @@ export type Schedule = {
 async function apiFetch<T>(path: string, options: RequestInit, retries = 2): Promise<T> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const res = await fetch(`${API_BASE_URL}${path}`, {
+      const res = await fetch(`${API_BASE_URL}/api${path}`, {
         ...options,
         headers: {
           "Content-Type": "application/json",
@@ -168,7 +168,7 @@ async function apiFetchWithAuth<T>(
     headers["Authorization"] = `Bearer ${session.access_token}`;
   }
 
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await fetch(`${API_BASE_URL}/api${path}`, {
     ...options,
     headers: headers as HeadersInit,
   });

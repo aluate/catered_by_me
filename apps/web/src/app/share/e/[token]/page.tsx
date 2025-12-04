@@ -23,8 +23,7 @@ export default function ShareEventPage() {
     try {
       setLoading(true);
       setError(null);
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8003";
-      const response = await fetch(`${API_BASE_URL}/events/public/${token}`);
+      const response = await fetch(`/api/events/public/${token}`);
       
       if (!response.ok) {
         throw new Error("Event not found or link expired");
