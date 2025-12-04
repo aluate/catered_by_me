@@ -32,7 +32,9 @@ export async function POST(
     }
 
     // Generate public token
-    const publicToken = crypto.randomUUID();
+    const publicToken = typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 
     // Update event with public token
     await supabase

@@ -37,7 +37,9 @@ export function parseTextRecipe(
   headcount: number,
   rawText: string
 ): Recipe {
-  const recipeId = crypto.randomUUID();
+  const recipeId = typeof crypto !== "undefined" && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
   // Extract title if not provided
   let recipeTitle = title;
@@ -207,7 +209,9 @@ function parseQuantity(qtyStr: string): number {
 }
 
 function parseStepToTask(stepText: string): AtomicTask | null {
-  const taskId = crypto.randomUUID();
+  const taskId = typeof crypto !== "undefined" && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
   // Determine station based on keywords
   const stepLower = stepText.toLowerCase();
