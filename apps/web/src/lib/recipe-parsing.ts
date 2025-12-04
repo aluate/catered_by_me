@@ -101,7 +101,6 @@ export function parseTextRecipe(
 
   // Parse steps into tasks
   const tasks: AtomicTask[] = [];
-  let stepNum = 1;
   for (const line of stepsText.split("\n")) {
     const trimmed = line.trim();
     if (!trimmed) {
@@ -119,7 +118,6 @@ export function parseTextRecipe(
     const task = parseStepToTask(withoutNumber);
     if (task) {
       tasks.push(task);
-      stepNum++;
     }
   }
 
