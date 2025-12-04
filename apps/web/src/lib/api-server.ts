@@ -98,7 +98,7 @@ export async function getUserIdFromRequest(request: NextRequest): Promise<string
     }
 
     return user.id;
-  } catch (error) {
+  } catch {
     // Token invalid or expired
     return null;
   }

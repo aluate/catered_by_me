@@ -229,12 +229,11 @@ function checkCapacityIssues(
   // Check prep window
   const prepLane = lanes.find((lane) => lane.station === "prep");
   if (prepLane && prepLane.tasks.length > 0) {
-    // Find earliest prep task and latest prep task
-    const prepTasks = [...prepLane.tasks].sort(
-      (a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
-    );
-    const earliestPrep = prepTasks[0];
-    const latestPrep = prepTasks[prepTasks.length - 1];
+        // Find earliest prep task
+        const prepTasks = [...prepLane.tasks].sort(
+          (a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+        );
+        const earliestPrep = prepTasks[0];
 
     // Total prep time needed
     const totalPrepTime = prepTasks.reduce(

@@ -116,7 +116,7 @@ export function parseTextRecipe(
       continue;
     }
 
-    const task = parseStepToTask(withoutNumber, stepNum);
+    const task = parseStepToTask(withoutNumber);
     if (task) {
       tasks.push(task);
       stepNum++;
@@ -208,7 +208,7 @@ function parseQuantity(qtyStr: string): number {
   return Number(qtyStr);
 }
 
-function parseStepToTask(stepText: string, stepNum: number): AtomicTask | null {
+function parseStepToTask(stepText: string): AtomicTask | null {
   const taskId = crypto.randomUUID();
 
   // Determine station based on keywords
