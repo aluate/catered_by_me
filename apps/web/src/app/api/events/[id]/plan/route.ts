@@ -38,11 +38,10 @@ export async function POST(
       return errorResponse("Event not found", 404);
     }
 
-    if (!eventResponse.data) {
+    const eventRow = eventResponse.data;
+    if (!eventRow) {
       return errorResponse("Event not found", 404);
     }
-
-    const eventRow = eventResponse.data;
 
     // Determine serve time
     let serveTime: Date;
